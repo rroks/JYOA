@@ -1,0 +1,49 @@
+	#include("/common/include/pageTitleBread.html")
+	<div id="page-content">
+			<div class="col-lg-12">
+		        <div class="panel">
+		            <div class="panel-heading">
+		                <h3 class="panel-title" style="text-align:center;">
+						#(pageTitleBread.pageTitle)单
+						#@installFlowHisBtn(defId,procInsId,o?o.if_customflow:"0")
+							<span style="position: absolute;right: 150px;">
+			                	#@installAttachment(o?o.id:'')
+		                	</span>
+						#if(o&&o.id&&"0"==o.if_customflow)
+						<a href="#(ctx)/admin/oa/common/business/export?id=#(o.id)&type=bankaccount" target="_blank" style="position: absolute;right: 220px">
+							<button class="btn btn-warning" type="button">导出</button>
+						</a>
+						#end
+					</h3>
+		            </div>
+		            #include("editForm.html")
+					#if("0"==o.if_customflow)
+		            #@buildWorkFlowHisTable(hislist)
+					#end
+		        </div>
+		    </div>
+	</div>
+	<script>
+		function save(){
+			var data = common_ajax.ajaxFunc("/admin/oa/apply/bankaccount/save", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+					doPjax(ctx+'/admin/oa/apply/bankaccount/getListPage?type=#(type)');//跳转到列表页
+				},data);
+			}else{
+				pointLion.alertMsg(data.message , "danger" , "small" , function(){
+					$(".btn").removeAttr("disabled");
+				},data);
+			}
+		}
+		
+		$(document).ready(function() {
+			$('#editForm').bootstrapValidator({
+	            fields: {
+	            }
+	        }).on("success.form.bv", function (e) {
+	            save();
+	            return false;//阻止表单跳转
+	        });
+		});
+	</script>

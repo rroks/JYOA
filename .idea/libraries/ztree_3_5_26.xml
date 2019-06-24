@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ztree.3.5.26">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/common/plugins/zTree_v3/js/ztree.3.5.26.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

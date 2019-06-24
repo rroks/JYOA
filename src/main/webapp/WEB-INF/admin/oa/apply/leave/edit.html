@@ -1,0 +1,101 @@
+	#include("/common/include/pageTitleBread.html")
+	<div id="page-content">
+			<div class="col-lg-12">
+		        <div class="panel">
+		            <div class="panel-heading">
+		                <h3 class="panel-title" style="text-align: center;">
+		                	#if(type=='1')请假申请单#elseif(type='2')外出申请单#end
+		                	#@installFlowHisBtn(defId,procInsId,o.if_customflow)
+		                	<span style="position: absolute;right: 150px;">
+			                	#@installAttachment(o?o.id:'')
+		                	</span>
+		                </h3>
+		            </div>
+		            #include("editForm.html")
+		            #@buildWorkFlowHisTable(hislist)
+		        </div>
+		    </div>
+	</div>
+	<script>
+		var type = "#(type)"; 
+		function save(){
+			var data = common_ajax.ajaxFunc("/admin/oa/apply/leave/save", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+					doPjax(ctx+'/admin/oa/apply/leave/getApplyListPage?type='+type);//跳转到列表页
+				},data);
+			}else{
+				pointLion.alertMsg(data.message,"danger",null,function(){
+					$(".btn").removeAttr("disabled");
+				},data);
+			}
+		}
+		function resetVali(){
+			if(!$("#editForm").data('bootstrapValidator').isValid()) {  
+		        $("#editForm").data('bootstrapValidator').resetForm();  
+		    }
+		}
+		$(document).ready(function() {
+			$('.form_datetime').datepicker({format: 'yyyy-mm-dd',weekStart: 1,todayBtn:  1,autoclose: 1,language:  'zh-CN',todayHighlight: 1,forceParse: 0,showMeridian: 1}).on('changeDate',function(){
+				var startTime = $("#startTime").val();
+				var endTime = $("#endTime").val();
+				if(startTime&&endTime){
+					if(!compareCalendar(startTime,endTime)){
+						pointLion.alertMsg("开始时间大于结束时间","danger",null,null);
+						$("#editForm .btn").attr("disabled","disabled");
+					}else{
+						resetVali();
+					}
+				}
+			});
+			$('#editForm').bootstrapValidator({
+	            fields: {
+	            	"#(formModelName).days": {
+					    validators: {
+			                notEmpty: {
+			                    message: '*请假天数不能为空'
+			                },
+			                lessThan: {
+	        					inclusive:true,
+	        					value: 365,
+	        					message: '*请输入小于365的数字'
+	        				}
+			            }
+	                },
+	                "#(formModelName).start_time":{
+					    validators: {
+			                notEmpty: {
+			                    message: '*开始时间不能为空'
+			                }
+			            }
+	                },
+	                "#(formModelName).end_time":{
+					    validators: {
+			                notEmpty: {
+			                    message: '*结束时间不能为空'
+			                }
+			            }
+	                }
+	            }
+	        }).on("success.form.bv", function (e) {
+	        	if(type=="1"){//如果是请假要校验年假
+	        		var days = parseInt($("#days").val());
+		        	var yearHoliday = parseInt($("#yearHoliday").val());
+		        	var ifAdd = $("#applyId").val();
+		        	if(ifAdd){
+		        		save();
+		        	}else{
+		        		if(days>yearHoliday){
+			        		pointLion.alertMsg("年假天数不足！","danger",null,null);
+			        		$(".btn").removeAttr("disabled");
+			        	}else{
+				            save();
+			        	}
+		        	}
+	        	}else{
+	        		save();
+	        	}
+	            return false;//阻止表单跳转
+	        });
+		});
+	</script>

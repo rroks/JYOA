@@ -1,0 +1,313 @@
+#include("/common/include/pageTitleBread.html")
+<div id="page-content">
+    <div class="col-sm-12 eq-box-sm">
+        <div class="panel lion-fullHeight">
+            <div class="panel-body">
+                <a id="add" class="btn btn-mint data-toolbar" onclick="doPjax('#(ctx)/admin/oa/CustomFlow/Add')" href="javascript:void(0);"><i class="demo-pli-add"></i> 添加</a>
+                <div class="row ">
+                    <div class="form-group col-sm-3 col-md-offset-1">
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">流程名称:</label>
+                        <div class="col-sm-8" id="serachmodelname">
+                            <input type="text"  class="col-sm-12 form-control"   value="#(o?o.name:'')">
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-3" id="serachmodeltype1">
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">一类类型:</label>
+                        <div class="col-sm-8 select">
+                            <select id="select-first" class="col-sm-12" onchange="type1selectchange()" >
+                                <option value="All">全部</option>
+                                #for(t:type1tableList)
+                                <option value="#(t.id)">#(t.name)</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-3" id="serachmodeltype2">
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">二类类型:</label>
+                        <div class="col-sm-8 select">
+                            <select id="select-second" class="col-sm-12 " onchange="type2selectchange()" >
+                                <option value="All">全部</option>
+                            </select>
+                        </div>
+                    </div>
+            </div>
+                <div class="row">
+                    <div class="form-group col-sm-3 col-md-offset-1" id="serachmodeltype3">
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">三类类型:</label>
+                        <div class="col-sm-8 select">
+                            <select id="select-third" class="col-sm-12 " >
+                                <option value="All">全部</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div  class="row col-sm-3 form-group" style="margin-left: 5px">
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">创建时间:</label>
+                        <div class="col-sm-4" id="searchStartTime">
+                            <div class="input-group date form_datetime col-sm-12">
+                                <input class="form-control" col-sm-12 type="text" placeholder="开始日期" >
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4" id="searchEndTime">
+                            <div class="input-group date form_datetime col-sm-12" >
+                                <input class="form-control" col-sm-12 type="text" placeholder="结束日期" >
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group col-sm-4" style="margin-left: 5px" id="modelstate">
+                        <label class="col-sm-2 control-label text-center" style="margin-top: 4px">流程状态:</label>
+                        <div class="radio-inline col-sm-8" style="margin-top: 4px">
+                            <label class="radio-inline"> <input type="radio" name="optionsRadios" value="all" checked> 全部</label>
+                            <label class="radio-inline"><input type="radio" name="optionsRadios" value="1"> 启用</label>
+                            <label class="radio-inline"><input type="radio" name="optionsRadios" value="0"> 停用</label>
+                            <label class="radio-inline"> <input type="radio" name="optionsRadios" value="2"> 草稿</label>
+                        </div>
+                        <a id="search" class="col-sm-2  btn btn-mint " style="float: left"  onclick="searchTable()" href="javascript:void(0);"><i class="demo-pli-add"></i> 搜索</a>
+                    </div>
+
+                </div>
+                <table id="pageTable" class="demo-add-niftycheck" data-toolbar="#nameSearch,#del,#add"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-page-list="[5, 10, 20]"
+                       data-page-size="5"
+                       data-pagination="true"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var bootstrapTableHeight = getBootstrapTableHeight();
+    var col = [{
+        field: 'id',
+        title: 'id',
+        align: 'center'
+    }, {
+        field: 'Number',
+        title: '序号',
+        formatter: function (value, row, index) {
+            return index+1;
+        }
+    }, {
+        field: 'name',
+        title: '流程名称',
+        align: 'center'
+    }, {
+        field: 'node_sum',
+        title: '节点数量',
+        align: 'center'
+    }, {
+        field: 'execute_sum',
+        title: '执行次数',
+        align: 'center',
+    }, {
+        field: 'state',
+        title: '流程状态',
+        align: 'center',
+        formatter:function(value,row,index){
+            if(value=="0"){
+                return "停用";
+            }else if(value=="1"){
+                return "启用";
+            }else if(value=="2"){
+                return "草稿";
+            }
+        }
+    }, {
+        field: 'type_3',
+        title: '归属类别',
+        align: 'center'
+    }, {
+        field: 'create_user',
+        title: '创建人',
+        align: 'center'
+    }, {
+        field: 'create_time',
+        title: '创建时间',
+        align: 'center'
+    },{
+        field: 'control',
+        title: '操作',
+        align: 'left',
+        width:'180',
+        formatter:function(value,row,index){
+            //通过formatter可以自定义列显示的内容
+            //value：当前field的值，即id
+            //row：当前行的数据
+            var a = '';
+            a = a + '<a class="WebUploader label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/CustomFlow/getEditPage?id='+row.id+'&view=edit\')" href="javascript:void(0);" target="_blank">修改</a>&nbsp;';
+            a = a + '<a class="label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/CustomFlow/getEditPage?id='+row.id+'&view=detail\')"  href="javascript:void(0);" target="_blank">查看</a>&nbsp;';
+            a = a + '<a class="label label-table label-success" href=\''+ctx+'/admin/sys/template/downloadFile?id='+row.id+'\' target="_blank">停用</a>&nbsp;';
+            return a;
+        }
+    }];
+    var opt = {
+        //请求方法
+        method: 'post',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType:'json',
+        //是否显示行间隔色
+        striped: true,
+        //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        cache: false,
+        //data-toolbar: "#demo-delete-row",
+        //是否显示分页（*）
+        pagination: true,
+        //是否启用排序
+        sortable: false,
+        //排序方式
+        sortOrder: "desc",
+        //初始化加载第一页，默认第一页
+        //我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+        //pageNumber:1,
+        //每页的记录行数（*）
+        pageSize: 25,height:bootstrapTableHeight,
+        //可供选择的每页的行数（*）
+        pageList: [10, 25, 50, 100],
+        //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+        url: ctx+"/admin/oa/CustomFlow/listData",
+        //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+        //queryParamsType:'',
+        ////查询参数,每次调用是会带上这个参数，可自定义
+        queryParams : function(params) {
+            return {
+                pageNumber: (params.offset/params.limit)+1,
+                pageSize: params.limit,
+                orgid:orgid,
+            };
+        },
+        //分页方式：client客户端分页，server服务端分页（*）
+        sidePagination: "server",
+        //是否显示搜索
+        search: false,
+        //Enable the strict search.
+        strictSearch: true,
+        //Indicate which field is an identity field.
+        idField : "id",
+        columns: col,
+        pagination:true,paginationShowPageGo: true
+    };
+    //表格
+    function initTable(){
+        $('#pageTable').bootstrapTable(opt);
+        $('#pageTable').bootstrapTable('hideColumn', 'id');
+    }
+    //查询
+    function searchTable(){
+        var name = $("#serachmodelname input").val();
+        var type1 = $("#serachmodeltype1 option:selected").val();
+        var type2 = $("#serachmodeltype2 option:selected").val();
+        var type3 = $("#serachmodeltype3 option:selected").val();
+        var startTime = $("#searchStartTime input").val();
+        var endTime = $("#searchEndTime input").val();
+        var state = $("input[type='radio']:checked").val();
+        if(typeof type1 == "undefined"){
+            type1="";
+        }
+        if(typeof type2 == "undefined"){
+            type2="";
+        }
+        if(typeof type3 == "undefined"){
+            type3="";
+        }
+        if(state=="all"){
+            state="";
+        }
+        var param = {
+            url: ctx+"/admin/oa/CustomFlow/listData",
+            query: {
+                "name":encodeURIComponent(name),
+                "startTime":startTime,
+                "endTime":endTime,
+                "type1":encodeURIComponent(type1),
+                "type2":encodeURIComponent(type2),
+                "type3":encodeURIComponent(type3),
+                "state":state,
+            }
+        }
+        // 刷新表格
+        $('#pageTable').bootstrapTable('refresh',param);
+    }
+    function type1selectchange(){
+
+        //获得一级select的值
+        var firstValue = $("#select-first").val();
+        //如果一级select的值为null，隐藏二、三级select,并返回
+        if(firstValue == 'All'){
+            $("#select-second").val("All");
+            $("#select-third").val("All");
+            $("#select-second").find("option:not(:first)").remove();
+            $("#select-third").find("option:not(:first)").remove();
+            return;
+        }
+        console.log(firstValue);
+        //根据一级select的值，异步获取数据更新二级的选项
+        $.ajax({
+            type:'get',
+            url:ctx+"/admin/oa/CustomFlow/typelistbyAjax",
+            cache:false,
+            dataType:'json',
+            data:{
+                parentId:firstValue
+            },
+            success:function(secondDatas){
+                $("#select-second").find("option:not(:first)").remove();
+                //遍历回传的数据添加到二级select
+                $.each(secondDatas, function(key, secondData) {
+
+                    var option = '<option value="'+secondData.id+'">'+secondData.name+'</option>'
+                    $("#select-second").append(option)
+
+                })
+                //三级select隐藏
+                $("#select-third").select("All");
+            },
+            error:function(){
+                alert("请求失败")
+            }
+        });
+    }
+    function type2selectchange(){
+        //清空二级和三级select的旧选项
+        $("#select-third").select("All");
+        //获得一级select的值
+        var secondValue = $("#select-second").val();
+        //如果一级select的值为null，隐藏二、三级select,并返回
+        if(secondValue == 'All'){
+            $("#select-third").val("All");
+            $("#select-third").find("option:not(:first)").remove();
+            return;
+        }
+        console.log(secondValue);
+        //根据一级select的值，异步获取数据更新二级的选项
+        $.ajax({
+            type:'get',
+            url:ctx+"/admin/oa/CustomFlow/typelistbyAjax",
+            data:{
+                parentId:secondValue
+            },
+            cache:false,
+            dataType:'json',
+            success:function(thirdDatas){
+                //遍历回传的数据添加到三级select
+                $("#select-third").find("option:not(:first)").remove();
+                $.each(thirdDatas, function(key, thirdDatas) {
+
+                    var option = '<option value="'+thirdDatas.id+'">'+thirdDatas.name+'</option>'
+                    $("#select-third").append(option)
+
+                })
+            },
+            error:function(){
+                alert("请求失败")
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $('.form_datetime').datepicker({format: 'yyyy-mm-dd',weekStart: 1,todayBtn:  1,autoclose: 1,language:  'zh-CN',todayHighlight: 1,forceParse: 0,clearBtn: true }).on('changeDate',null);
+        initFullHeight();//初始化高度
+        initTable();//初始化表格
+    });
+</script>

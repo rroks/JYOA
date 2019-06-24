@@ -1,0 +1,101 @@
+					<form id="editForm" class="panel-body form-horizontal form-padding">
+		            	<input type="hidden" name="#(formModelName).id" value="#(o?o.id:'')">
+		            	<div class="form-group">
+		                    <label class="col-md-2 control-label">公文文号</label>
+		                    <div class="col-md-3" style="padding-left: 15px;">
+				                    <select class="selectpicker" name="#(formModelName).doc_type" #if(view=="detail") disabled #end>
+		                                <option value="0">呈批文</option>
+		                            </select>
+		                    </div>
+		                    <div class="col-md-3">
+			                    <input type="text" name="#(formModelName).doc_num_year" value="#(o.doc_num_year)"  class="form-control" readonly>
+		                    </div>
+		                    <div class="col-md-1">
+			                    <input type="text" name="#(formModelName).doc_num_n" value="2" class="form-control" #if(view=="detail") readonly #end>
+		                    </div>
+		                    <div class="col-md-1" style="line-height: 32px;">
+			                    	号文
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">起草部门</label>
+		                    <div class="col-md-3">
+		                    	<input type="hidden" name="#(formModelName).sender_orgid" value="#(o.sender_orgid)">
+		                        <input type="text" name="#(formModelName).sender_orgname" value="#(o.sender_orgname)" readonly class="form-control">
+		                    </div>
+		                    <div class="col-md-3">
+		                    	<input type="hidden" name="#(formModelName).sender_id" value="#(o.sender_id)">
+		                        <input type="text" name="#(formModelName).sender_name" value="#(o.sender_name)" readonly class="form-control">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">标题</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="#(formModelName).title" class="form-control"  value="#(o?o.title:'')" #if(view=="detail") readonly #end />
+		                        <small class="help-block">请输入公文标题</small>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label" for="demo-textarea-input">主送</label>
+		                    <div class="col-md-8" style="line-height: 30px;">
+		                    	<div #if(view!="detail") class="input-group mar-btm" #end>
+		                    		<input type="hidden" id="firstOrgId" name="firstOrgId" value="#(firstOrgId)">
+			                        <input type="text"   id="firstOrgName" name="firstOrgName" value="#(firstOrgName)" readonly class="form-control">
+			                        #if(view!="detail") 
+				                        <span class="input-group-btn">
+				                            <button class="btn btn-mint" type="button" onclick="selectFirst()">选择</button>
+				                        </span>
+				                    #end
+			                    </div>
+		                        <small class="help-block">请输选择主送单位</small>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">抄送</label>
+		                    <div class="col-md-8" style="line-height: 30px;">
+		                    	<div #if(view!="detail") class="input-group mar-btm" #end>
+			                        <input type="hidden" id="secondOrgId" name="secondOrgId" value="#(secondOrgId)">
+			                        <input type="text"   id="secondOrgName" name="secondOrgName" value="#(secondOrgName)" readonly class="form-control">
+			                        #if(view!="detail") 
+			                        	<span class="input-group-btn">
+				                            <button class="btn btn-mint" type="button" onclick="selectSecond()">选择</button>
+				                        </span> 
+			                        #end 
+			                    </div>
+		                        <small class="help-block">请输选择抄送单位</small>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">公文描述</label>
+		                    <div class="col-md-8">
+		                        <textarea name="#(formModelName).content" rows="12" class="form-control" #if(view=="detail") readonly #end>#(o?o.content:'')</textarea>
+		                        <small class="help-block">请输入公文描述内容</small>
+		                    </div>
+		                </div>
+		                
+		                #if(view=="detail")
+			                <div class="form-group">
+			                    <label class="col-md-2 control-label">部门领导批示信息</label>
+			                    <div class="col-md-8">
+			                        <textarea rows="8" class="form-control" readonly>#(o?o.first_leader_audit:'')</textarea>
+			                    </div>
+			                </div>
+			                <div class="form-group">
+			                    <label class="col-md-2 control-label">公司领导批示信息</label>
+			                    <div class="col-md-8">
+			                        <textarea rows="8" class="form-control"  readonly>#(o?o.second_leader_audit:'')</textarea>
+			                    </div>
+			                </div>
+			            #end
+			            
+		                #if(view!="detail") 
+			                <div class="panel-footer">
+			                    <div class="row">
+			                        <div class="col-sm-9 col-sm-offset-3">
+			                            <button class="btn btn-warning" type="reset">重置</button>
+			                            <button class="btn btn-mint" type="submit" >保存</button>
+			                        </div>
+			                    </div>
+			                </div>
+			            #end
+		            </form>

@@ -1,0 +1,426 @@
+#include("/common/include/pageTitleBread.html")
+    <div id="page-content">
+        <div class="col-lg-12">
+            <div class="panel">
+                <form id="editForm" class="panel-body form-horizontal form-padding">
+                    <input type="hidden"  name="oaCustomFlowmodel.id" class="form-control" value="#(o?o.id:'')">
+                    <div class="form-group">
+                        <label class="col-md-1 control-label col-md-offset-1"><small  style="color: #FF0000">*</small>流程名称:</label>
+                        <div class="col-md-8">
+                            <input type="text"  name="oaCustomFlowmodel.name" class="form-control"  value="#(o?o.name:'')">
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="col-md-1 control-label col-md-offset-1"><small  style="color: #FF0000">*</small>一类类型:</label>
+                        <div class="col-md-2">
+                            <select id="select-first" class="col-md-12" onchange="type1selectchange()" name="oaCustomFlowmodel.type_1" #if(view=='detail') readonly #end>
+                                <option value="none">请选择</option>
+                                #for(t:type1tableList)
+                                <option value="#(t.id)">#(t.name)</option>
+                                #end
+                            </select>
+                        </div>
+                        <label class="col-md-1 control-label"><small  style="color: #FF0000">*</small>二类类型:</label>
+                        <div class="col-md-2">
+                            <select id="select-second" class="col-md-12" onchange="type2selectchange()"  name="oaCustomFlowmodel.type_2" #if(view=='detail') readonly #end>
+                                <option value="none">请选择</option>
+                            </select>
+                        </div>
+                        <label class="col-md-1 control-label"><small  style="color: #FF0000">*</small>三类类型:</label>
+                        <div class="col-md-2">
+                            <select id="select-third" class="col-md-12" name="oaCustomFlowmodel.type_3" #if(view=='detail') readonly #end>
+                                <option value="none">请选择</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" id="firstOrgId" name="oaCustomFlowmodel.visible_org">
+                        <label class="col-md-1 control-label col-md-offset-1"><small  style="color: #FF0000">*</small>可见部门(<small  style="color: #FF0000">不可全选</small>):</label>
+                        <div>
+                            <button id="department" onclick="selectManyOrg()" type="button"  class="btn-primary btn-sm" style="float: left;">选择</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="width: 5%;margin: auto auto;">
+                            <div class="form-group rect"  >
+                                <p>开始</p>
+                            </div>
+                        </div>
+                        <div style="z-index: 1;position:absolute;left:70%;top:150px;width:20%;">
+                            <button id="next" type="button"  class="btn-default btn-lg" style="float: left;margin-left: 1%">下一步</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="arrow-body"></div>
+                        <div class="arrow-footer"></div>
+                    </div>
+                <div  class="panel-body form-horizontal form-padding">
+                    <div id="nodes">
+                        <div class="rect node" node-number="1">
+                            <input type="hidden"  name="oaCustomflowModelnodeList[1].id" class="form-control">
+                            <div class="form-group">
+                                <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>节点名称:</label>
+                                <div class="col-md-6">
+                                    <input type="text"  name="oaCustomflowModelnodeList[1].name" class="form-control"  value="#(o?o.name:'')">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批类型:</label>
+                                <div class="col-md-6">
+                                    <select class="col-md-12" name="oaCustomflowModelnodeList[1].approvaltype" onchange="appselectchange(this)">
+                                        <option value="1">单人审批</option>
+                                        <option value="2">多人审批</option>
+                                        <option value="3">自定义</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden"  name="oaCustomflowModelnodeList[1].approvaluserid" class="form-control"  value="#(flowCC)">
+                                <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>
+                                <button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="arrow-body"></div>
+                        <div class="arrow-footer"></div>
+                    </div>
+                    <div class="form-group" style="width: 5%;margin: auto auto;">
+                        <div class="form-group rect"  >
+                            <p>结束</p>
+                        </div>
+                    </div>
+                    <br><br>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <button class="btn btn-primary btn-lg col-md-offset-2" type="button" onclick="save(1)">保存并启用</button>
+                                <button class="btn btn-primary btn-lg col-md-offset-2" type="button" onclick="save(2)">保存为草稿</button>
+                                <button class="btn btn-default btn-lg col-md-offset-2" type="button" onclick="cancel()">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <script>
+            var nodenum = 1;
+            function save(type){
+                $("#editForm").data('bootstrapValidator').validate();
+                if(!$("#editForm").data('bootstrapValidator').isValid()) {
+                    pointLion.alertMsg("校验不通过,请检查相关数据!");
+                    return;
+                }
+                    var state="";
+                if(type==1){
+                    state=1;
+                }else{
+                    state=2;
+                }/*
+                //获取所有节点的数据
+                var arr = [];
+                $(".node").each(function(){
+                    var nodename = $(this).find('input[name="nodename"]').val();
+                    var nodetype = $(this).find('select[name="nodetype"]').val();
+                    var nodeflowcc = $(this).find('select[name="flowCC"]').val();
+                    console.log(nodename);
+                    console.log(nodetype);
+                    var objectData = {
+                        nodename: nodename,
+                        nodetype: nodetype,
+                        nodeflowcc: nodeflowcc
+                    };
+                    arr.push(objectData);
+                })*/
+
+                var data = common_ajax.ajaxFunc("/admin/oa/CustomFlow/save", $('#editForm').serialize()+'&type='+state/*+'&nodes='+ JSON.stringify(arr)*/, "json", null);
+                if(data.success){
+                    pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+                        doPjax(ctx+'/admin/oa/CustomFlow/getListPage');//跳转到列表页
+                    },data);
+                }else{
+                    pointLion.alertMsg(data.message , "danger" , "small" , function(){
+                        $(".btn").removeAttr("disabled");
+                    },data);
+                }
+            }
+            function cancel(){
+                doPjax('#(ctx)/admin/oa/CustomFlow/getListPage');
+            }
+            //选择部门
+            function selectManyOrg(){
+                var orgid = $("#firstOrgId").val();
+                console.log(orgid);
+                pointLion.editManyOrg(function(orgNode) {
+                    var firstId = [];
+                    $.each(orgNode, function (i, d) {
+                        firstId.push(d.id);
+                    });
+                    $("#firstOrgId").val(firstId.join(","));
+                 },orgid);
+            }
+
+            $(document).ready(function() {
+                $("#next").on( 'click', function() {
+                console.log("增加下一步...");
+                rect();
+                });
+                Validator();
+            });
+            function deletenode(element){
+                console.log("删除节点...");
+                var firstparent  = $(element).parent();
+                var secondparent = $(firstparent).parent();
+                var thirdparent = $(secondparent).parent();
+                $(thirdparent).detach();
+                nodenum--;
+            }
+            function rect(){
+                nodenum++;
+                console.log("生成节点..."+nodenum);
+                let divnode = document.createElement("div");
+
+                let divarrow = document.createElement("div");
+                divarrow.classList.add("form-group");
+                divarrow.innerHTML +='<div class="arrow-body"></div>\n'+
+                    '<div class="arrow-footer"></div>\n';
+
+
+                let div = document.createElement("div");
+                div.classList.add("rect");
+                div.classList.add("node");
+                //div.setAttribute("node-number","")
+                div.innerHTML +='<input type="hidden"  name="nodeid" class="form-control">\n' +
+                    '<div class="form-group">\n' +
+                    '            <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>节点名称:</label>\n' +
+                    '                <div class="col-md-6">\n' +
+                    '            <input type="text"  name="oaCustomflowModelnodeList['+nodenum +'].name" class="form-control"  >\n' +
+                    '         </div>\n'+
+                    '<button  type="button" onclick="deletenode(this)" class="btn-default btn-sm" style="float: left;margin-left: 5%">X</button>\n'+
+                    '         </div>\n'+
+                    '<div class="form-group">\n' +
+                    '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批类型:</label>\n' +
+                    '<div class="col-md-6">\n' +
+                    '<select class="col-md-12" name="oaCustomflowModelnodeList['+nodenum +'].approvaltype" onchange="appselectchange(this)">\n' +
+                    '<option value="1">单人审批</option>\n' +
+                    '<option value="2">多人审批</option>\n' +
+                    '<option value="3">自定义</option>\n' +
+                    '</select>\n' +
+                    '</div>\n' +
+                    '</div>\n' +
+                    '<div class="form-group">\n' +
+                    '<input type="hidden"  name="oaCustomflowModelnodeList['+nodenum +'].approvaluserid" class="form-control"  value="#(flowCC)">\n' +
+                    '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>\n' +
+                    '<button id="ctlBtn" type="button" onclick="openSlectFlowCCDialog(this)"   class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>\n' +
+                    '</div>\n';
+                divnode.appendChild(divarrow);
+                divnode.appendChild(div);
+                document.getElementById('nodes').appendChild(divnode);
+                $('#editForm').bootstrapValidator('addField','oaCustomflowModelnodeList['+nodenum +'].name', {
+                    validators: {
+                        notEmpty: {
+                            message: '节点名称不能为空'
+                        }
+                    }
+                });
+            }
+            function type1selectchange(){
+
+                //获得一级select的值
+                var firstValue = $("#select-first").val();
+                //如果一级select的值为null，隐藏二、三级select,并返回
+                if(firstValue == 'none'){
+                    $("#select-second").val("none");
+                    $("#select-third").val("none");
+                    $("#select-second").find("option:not(:first)").remove();
+                    $("#select-third").find("option:not(:first)").remove();
+                    return;
+                }
+                console.log(firstValue);
+                //根据一级select的值，异步获取数据更新二级的选项
+                $.ajax({
+                    type:'get',
+                    url:ctx+"/admin/oa/CustomFlow/typelistbyAjax",
+                    cache:false,
+                    dataType:'json',
+                    data:{
+                        parentId:firstValue
+                    },
+                    success:function(secondDatas){
+                        $("#select-second").find("option:not(:first)").remove();
+                        //遍历回传的数据添加到二级select
+                        $.each(secondDatas, function(key, secondData) {
+
+                            var option = '<option value="'+secondData.id+'">'+secondData.name+'</option>'
+                            $("#select-second").append(option)
+
+                        })
+                    },
+                    error:function(){
+                        alert("请求失败")
+                    }
+                });
+            }
+            function type2selectchange(){
+                //获得一级select的值
+                var secondValue = $("#select-second").val();
+                //如果一级select的值为null，隐藏二、三级select,并返回
+                if(secondValue == 'none'){
+                    $("#select-third").val("none");
+                    $("#select-third").find("option:not(:first)").remove();
+                    return;
+                }
+                console.log(secondValue);
+                //根据一级select的值，异步获取数据更新二级的选项
+                $.ajax({
+                    type:'get',
+                    url:ctx+"/admin/oa/CustomFlow/typelistbyAjax",
+                    data:{
+                        parentId:secondValue
+                    },
+                    cache:false,
+                    dataType:'json',
+                    success:function(thirdDatas){
+                        //遍历回传的数据添加到三级select
+                        $("#select-third").find("option:not(:first)").remove();
+                        $.each(thirdDatas, function(key, thirdDatas) {
+
+                            var option = '<option value="'+thirdDatas.id+'">'+thirdDatas.name+'</option>'
+                            $("#select-third").append(option)
+
+                        })
+                    },
+                    error:function(){
+                        alert("请求失败")
+                    }
+                });
+            }
+            function openSlectFlowCCDialog(element){
+                var type = $(element).parent().prev().find('select').val();
+                if(type==1){
+                    var flowcc =  $(element).siblings('input');
+                    pointLion.selectOneUser(encodeURIComponent("#root"),function(data){
+                        flowcc.val(data.idData);
+                    });
+                }else{
+                    var flowcc =  $(element).siblings('input');
+                    pointLion.selectManyUser4CC("orgid="+encodeURIComponent("#root")+"&flowCCId="+encodeURIComponent($(flowcc).val()),function(data){
+                        //if(data.idData != null && data.idData !=""){
+                        flowcc.val(data.idData);
+                        //$("#flowCCName").val(data.nameData);
+                        //	}
+                    });
+                }
+            }
+            function appselectchange(element){
+                var flowcc =  $(element).parent().parent().next().find('input');
+                flowcc.val('');
+                if(element.value==3){
+                    $(element).parent().parent().next().hide();
+                    var attrname = $(element).parent().parent().next().find('input').attr("name");
+                    $('#editForm').bootstrapValidator('removeField',attrname);
+                }else{
+                    $(element).parent().parent().next().show();
+                    var attrname = $(element).parent().parent().next().find('input').attr("name");
+                    $('#editForm').bootstrapValidator('addField',attrname, {
+                        validators: {
+                            notEmpty: {
+                                message: '请选择节点审批人员！'
+                            }
+                        }
+                    });
+                }
+            }
+            function Validator(){
+                $('#editForm').bootstrapValidator({
+                    message: 'This value is not valid',
+                    excluded : [':disabled'],
+                    fields: {
+                        "oaCustomFlowmodel.name":{
+                            validators: {
+                                notEmpty: {
+                                    message: '*模型名称不能为空'
+                                },
+                                stringLength: {
+                                    max: 100,
+                                    message: '*模型名称长度必须小于100'
+                                }
+                            }
+                        },
+                        "oaCustomFlowmodel.type_3":{
+                            message :'模型类别校验失败!',
+                            validators: {
+                                notEmpty: {
+                                    message: '*模型类别不能为空'
+                                },
+                                callback: {
+                                    message: '*请选择模板类型',
+                                    callback: function(value, validator) {
+                                        if (value == "none") {
+                                            return false;
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                                }
+
+                            }
+                        },
+                        "oaCustomFlowmodel.visible_org":{
+                            message :'可见部门校验失败!',
+                            validators: {
+                                notEmpty: {
+                                    message: '*请选择可见部门'
+                                }
+
+                            }
+                        },
+                        'oaCustomflowModelnodeList[1].name': {
+                            validators: {
+                                notEmpty: {
+                                    message: '节点名称不能为空'
+                                }
+                            }
+                        }
+                    }
+                }).on("success.form.bv", function (e) {
+                    return false;//阻止表单跳转
+                });
+            }
+        </script>
+
+        <style>
+            div.rect {
+                border-radius: 20px;
+                border:2px solid;
+                text-align: center;
+                padding: 10px 0 0 0;
+                margin: 5px 5px;
+            }
+
+            div.rect:hover {
+                cursor: pointer;
+            }
+            div.arrow-body {
+                width: 20px;
+                height: 50px;
+                background: #ccc;
+                margin: 10px auto 0;
+            }
+
+            div.arrow-footer {
+                width: 0;
+                height: 0;
+                border-width: 30px 30px 0;
+                border-style: solid;
+                border-color: #ccc transparent transparent; /*灰 透明 透明 */
+                margin: 0 auto;
+            }
+            #nodes {
+                width: 40%;
+                margin: auto auto;
+            }
+        </style>

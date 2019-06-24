@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="PointLion:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>PointLion</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="PointLion.war">
+      <element id="artifact" artifact-name="PointLion:war exploded" />
+    </root>
+  </artifact>
+</component>

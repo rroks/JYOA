@@ -1,0 +1,276 @@
+#include("/common/include/pageTitleBread.html")
+<div id="page-content">
+    <div class="col-sm-8 eq-box-sm">
+        <div class="panel lion-fullHeight">
+            <div class="panel-body">
+                <div class="col-sm-6" id="nameSearch">
+                    <input  id="nameSearchInput" type="text" placeholder="名称">
+                </div>
+                <table id="pageTable" class="demo-add-niftycheck" data-toolbar="#nameSearch,#del,#add"
+                       data-show-toggle="true"
+                       data-show-columns="true"
+                       data-page-list="[5, 10, 20]"
+                       data-page-size="5"
+                       data-pagination="true"></table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 eq-box-sm">
+        <div class="panel lion-fullHeight" id="leftPanel" style="overflow: scroll;">
+            <div class="panel-body">
+                <div class="col-sm-3" id="mapmodule">
+                    <input class="form-control" id="parammodule" type="text" placeholder="模块">
+                </div>
+                <div class="col-sm-3" id="mapname">
+                    <input class="form-control" id="paramname" type="text" placeholder="名称">
+                </div>
+                <div>
+                    <table id="mapTable" class="demo-add-niftycheck" data-toolbar="#mapparam,#del,#add"
+                           data-show-toggle="true"
+                           data-show-columns="true"
+                           data-page-list="[5, 10, 20]"
+                           data-page-size="5"
+                           data-pagination="true"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var bootstrapTableHeight = getBootstrapTableHeight();
+    var col = [{
+        field: 'id',
+        title: 'id',
+        align: 'center'
+    }, {
+        field: 'name',
+        title: '名称',
+        align: 'center'
+    }, {
+        field: 'belong',
+        title: '所属单位',
+        align: 'center'
+    }, {
+        field: 'uploaduser',
+        title: '上传用户',
+        align: 'center',
+    }, {
+        field: 'uploadtime',
+        title: '上传时间',
+        align: 'center'
+    }, {
+        field: 'control',
+        title: '操作',
+        align: 'left',
+        width:'180',
+        formatter:function(value,row,index){
+            //通过formatter可以自定义列显示的内容
+            //value：当前field的值，即id
+            //row：当前行的数据
+            var a = '';
+            a = a + '<a class="WebUploader label label-table label-success" onclick="openuploadPage(\''+row.id+'\')" href="javascript:void(0);" >上传</a>&nbsp;';
+            a = a + '<a class="label label-table label-success" href=\''+ctx+'/admin/sys/template/downloadFile?id='+row.id+'\' target="_blank">下载</a>&nbsp;';
+            return a;
+        }
+    }];
+    var colmap = [{
+        field: 'id',
+        title: 'id',
+        align: 'center'
+    }, {
+        field: 'module',
+        title: '模块',
+        align: 'center'
+    }, {
+        field: 'name',
+        title: '名称',
+        align: 'center'
+    }, {
+        field: 'param',
+        title: '参数',
+        align: 'center'
+    }];
+    var opt = {
+        //请求方法
+        method: 'post',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType:'json',
+        //是否显示行间隔色
+        striped: true,
+        //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        cache: false,
+        //data-toolbar: "#demo-delete-row",
+        //是否显示分页（*）
+        pagination: true,
+        //是否启用排序
+        sortable: false,
+        //排序方式
+        sortOrder: "desc",
+        //初始化加载第一页，默认第一页
+        //我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+        //pageNumber:1,
+        //每页的记录行数（*）
+        pageSize: 25,height:bootstrapTableHeight,
+        //可供选择的每页的行数（*）
+        pageList: [10, 25, 50, 100],
+        //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+        url: ctx+"/admin/sys/template/listData",
+        //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+        //queryParamsType:'',
+        ////查询参数,每次调用是会带上这个参数，可自定义
+        queryParams : function(params) {
+            return {
+                pageNumber: (params.offset/params.limit)+1,
+                pageSize: params.limit,
+                orgid:orgid,
+                nameSearch:$("#nameSearchInput").val(),
+            };
+        },
+        //分页方式：client客户端分页，server服务端分页（*）
+        sidePagination: "server",
+        //是否显示搜索
+        search: false,
+        //Enable the strict search.
+        strictSearch: true,
+        //Indicate which field is an identity field.
+        idField : "id",
+        columns: col,
+        pagination:true,paginationShowPageGo: true
+    };
+    var optmap = {
+        //请求方法
+        method: 'post',
+        contentType: 'application/x-www-form-urlencoded',
+        dataType:'json',
+        //是否显示行间隔色
+        striped: true,
+        //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        cache: false,
+        //data-toolbar: "#demo-delete-row",
+        //是否显示分页（*）
+        pagination: true,
+        //是否启用排序
+        sortable: false,
+        //排序方式
+        sortOrder: "asc",
+        //初始化加载第一页，默认第一页
+        //我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+        //pageNumber:1,
+        //每页的记录行数（*）
+        pageSize: 15,height:bootstrapTableHeight-45,
+        //可供选择的每页的行数（*）
+        pageList: [10,15, 25, 50, 100],
+        //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+        url: ctx+"/admin/sys/templateparam/listData",
+        //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+        //queryParamsType:'',
+        ////查询参数,每次调用是会带上这个参数，可自定义
+        queryParams : function(params) {
+            return {
+                pageNumber: (params.offset/params.limit)+1,
+                pageSize: params.limit,
+                orgid:orgid,
+                paramname:$("#paramname").val(),
+                moduleame:$("#parammodule").val()
+            };
+        },
+        //分页方式：client客户端分页，server服务端分页（*）
+        sidePagination: "server",
+        //是否显示搜索
+        search: false,
+        //Enable the strict search.
+        strictSearch: true,
+        //Indicate which field is an identity field.
+        idField : "id",
+        columns: colmap,
+        pagination:true,paginationShowPageGo: true
+    };
+
+    //表格
+    function initTable(){
+        $('#pageTable').bootstrapTable(opt);
+        $('#pageTable').bootstrapTable('hideColumn', 'id');
+        $('#mapTable').bootstrapTable(optmap);
+        $('#mapTable').bootstrapTable('hideColumn', 'id');
+    }
+    function refreshTable(){
+        $("#pageTable").bootstrapTable('refresh', opt);
+        $('#pageTable').bootstrapTable('hideColumn', 'id');
+    }
+
+    //查询
+    function search(){
+        var nameSearch = $("#nameSearchInput").val();
+        var param = {
+            url: ctx+"/admin/sys/template/listData",
+            query: {
+                filters:[
+                    {"123":123}
+                ]
+            }
+        }
+        // 刷新表格
+        $('#pageTable').bootstrapTable('refresh',param);
+    }
+    //查询
+    function searchmap(){
+        var paramname = $("#paramname").val();
+        var parammodule = $("#parammodule").val();
+        var param = {
+            url: ctx+"/admin/sys/templateparam/listData",
+            query: {
+                filters:[
+                    {"123":123}
+                ]
+            }
+        }
+        // 刷新表格
+        $('#mapTable').bootstrapTable('refresh',param);
+    }
+
+    /***
+     * 打开上传页面
+     */
+    var uploader;
+    var openuploadPage = function(tempid){
+        layer.open({
+            type: 2,
+            title: false, //不显示标题栏
+            area: ['1000px', '550px'],
+            shade: 0.8,
+            id: 'templatePage', //设定一个id，防止重复弹出
+            resize: false,
+            closeBtn: false,
+            isOutAnim : false ,
+            btnAlign: 'c',
+            btn: ['关闭'],
+            content: ctx+'/admin/sys/template/Uploadpage?tempid='+tempid,
+            success: function(layero){
+
+            },
+            yes: function(){
+                layer.closeAll();
+            },
+            end: function(){
+                refreshTable();
+                //if( callback != null ){
+                    //callback();
+                //}
+            }
+        });
+    }
+    $(document).ready(function(){
+        $("#leftPanel").css("height",document.body.clientHeight-132);
+        initFullHeight();//初始化高度
+        initTable();//初始化表格
+        $("#nameSearchInput").on("blur",function(){
+            search();
+        });
+        $("#paramname").on("blur",function(){
+            searchmap();
+        });
+        $("#parammodule").on("blur",function(){
+            searchmap();
+        });
+    });
+</script>

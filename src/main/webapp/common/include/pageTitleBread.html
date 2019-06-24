@@ -1,0 +1,9 @@
+<div id="page-title" style="margin-bottom: 5px;">
+	<!-- <h1 class="page-header text-overflow">#(pageTitleBread.pageTitle)</h1> -->
+	<span style="float: left;font-size: 20px;height: 30px;line-height: 30px;">#(pageTitleBread.pageTitle)</span>
+	<ol class="breadcrumb" style="float: left;height: 30px;line-height: 35px;margin-bottom: 0px;">
+		<li><a href="javascript:void(0);" onclick="doPjax('#(ctx)')">首页</a></li>
+		<li><a href="javascript:void(0);" onclick="doPjax('#(ctx)#(pageTitleBread.url)')">#(pageTitleBread.pageTitle)</a></li>
+		<li class="active">#(pageTitleBread.nowBread)</li>
+	</ol>
+</div>

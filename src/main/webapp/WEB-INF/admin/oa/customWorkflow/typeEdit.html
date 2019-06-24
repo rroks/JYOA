@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南方物业OA</title>
+    #include("/common/include/include.html")
+    <script src="#(ctx)/common/js/demo/nifty-demo.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/morris.min.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/raphael-js/raphael.min.js"></script>
+    <script src="#(ctx)/common/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <style>
+        .lay-body{
+            margin-top: 52px;
+            overflow-y: auto;
+            overflow-x: unset;
+        }
+        .lay-header{
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="modal-dialog" style="width:100%">
+    <div class="modal-content" style="height: 100%;">
+        <div class="modal-header lay-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title text-center">修改审批流程级别</h4>
+        </div>
+
+        <div class="modal-body lay-body">
+            <div class="col-lg-12">
+                <div class="panel">
+                    <form id="editForm" class="panel-body form-horizontal form-padding">
+                        <input type="hidden"  name="oaCustomflowType.id" class="form-control" value="#(o?o.id:'')">
+                        <div class="form-group row">
+                            <label class="col-md-1 control-label"><small  style="color: #FF0000">*</small>一类类型:</label>
+                            <div class="col-md-8">
+                                <select id="select-first" class="col-md-12 form-control" name="oaCustomflowTypetype1" onchange="type1selectchange()">
+                                    <option value="none">请选择</option>
+                                    #for(t:type1tableList)
+                                    <option value="#(t.id)">#(t.name)</option>
+                                    #end
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-1 control-label"><small  style="color: #FF0000">*</small>二类类型:</label>
+                            <div class="col-md-8">
+                                <select id="select-second" class="col-md-12 form-control" name="oaCustomflowTypetype2">
+                                    <option value="none">请选择</option>
+                                    #for(t:type2tableList)
+                                    <option value="#(t.id)">#(t.name)</option>
+                                    #end
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-1 control-label"><small  style="color: #FF0000">*</small>类别名称:</label>
+                            <div class="col-md-8">
+                                <input type="text"  name="oaCustomflowType.name" class="col-md-12 form-control"  value="#(o?o.name:'')" >
+
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div>
+                                    <button class="btn btn-danger" style="margin-left: 20%;" type="button" onclick="completeTask(1)">保存</button>
+                                    <button class="btn btn-mint" style="margin-left: 20%;" type="button" onclick="cancel()">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div><!-- panel end-->
+            </div><!-- col-lg-12 end-->
+        </div><!-- main-body end-->
+    </div>
+</div>
+<script>
+    penwidth = 3;
+    var obj;
+    var frist = "#(frist)";
+    var second = "#(second)";
+    function completeTask(pass){
+        var name = $("input[name='oaCustomflowType.name']");
+        if(name==null||name==''){
+            pointLion.alertMsg("请填写类型名称!");
+            return;
+        }
+        pointLion.confimMsg("确定要保存该信息吗？ <br/> 点击确认进行保存 , 点击取消取消该操作",null,function(){
+            var data = common_ajax.ajaxFunc("/admin/oa/CustomFlow/typesave?", $("#editForm").serialize(), "json", null);
+            if(data.success){
+                pointLion.alertMsg(data.message , "success" , "mint" , function(){
+                    parent.layer.closeAll();
+                });
+            }else{
+                pointLion.alertMsg(data.message , "success" , "mint" , function(){
+                    $(".btn").removeAttr("disabled");
+                });
+            }
+        });
+    }
+    function cancel(){
+        parent.layer.closeAll();
+    }
+    function type1selectchange(){
+        //获得一级select的值
+        var firstValue = $("#select-first").val();
+        //如果一级select的值为null，隐藏二、三级select,并返回
+        if(firstValue == 'none'){
+            $("#select-second").val("none");
+            $("#select-second").find("option:not(:first)").remove();
+            return;
+        }
+        //根据一级select的值，异步获取数据更新二级的选项
+        $.ajax({
+            type:'get',
+            url:ctx+"/admin/oa/CustomFlow/typelistbyAjax",
+            cache:false,
+            dataType:'json',
+            data:{
+                parentId:firstValue
+            },
+            success:function(secondDatas){
+                $("#select-second").find("option:not(:first)").remove();
+                //遍历回传的数据添加到二级select
+                $.each(secondDatas, function(key, secondData) {
+
+                    var option = '<option value="'+secondData.id+'">'+secondData.name+'</option>'
+                    $("#select-second").append(option)
+
+                })
+            },
+            error:function(){
+                alert("请求失败")
+            }
+        });
+    }
+    $(document).ready(function() {
+        if(frist!=""&&frist!=undefined){
+            $("#select-first").val(frist);
+        }
+        if(second!=""&&second!=undefined){
+            $("#select-second").val(second);
+        }
+    });
+</script>
+

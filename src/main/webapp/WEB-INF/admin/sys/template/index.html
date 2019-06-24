@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>index.html</title>
+
+
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+
+<body>
+<form id="taskForm" class="panel-body form-horizontal form-padding">
+    <div class="form-group">
+        <input type="text"  name="sysUser.username" class="form-control"  value="北京赛普科技有限公司提货单">
+        <input type="text"  name="sysUser.username" class="form-control"  value="提货单位">
+        <input type="text"  name="sysUser.username" class="form-control"  value="汉王科技股份有限公司">
+        <input type="text"  name="sysUser.username" class="form-control"  value="产品名称">
+        <input type="text"  name="sysUser.username" class="form-control"  value="数量">
+        <input type="text"  name="sysUser.username" class="form-control"  value="单价">
+        <input type="text"  name="sysUser.username" class="form-control"  value="总价">
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">提货人签字</label>
+        <button disabled = "disabled" id="pluginapp" onClick="btn_pluginapp();" >请签字</button> <img id="signimg"  width="100" height="60"/>
+    </div>
+    <div class="form-group">
+        <label class="col-md-2 control-label">出货人签字</label>
+        <button disabled = "disabled" id="pluginapp1" onClick="btn_pluginapp1();" >请签字</button> <img id="signimg1"  width="100" height="60"/>
+        <button id="btninit" onClick="init();" >初始化设备</button>
+    </div>
+
+</form>
+
+
+<script src="#(ctx)/common/js/common/launch.js"></script>
+<script type="text/javascript">
+
+
+    document.addEventListener("hanvonSigndataEvent",function(evt){
+        /*
+          监听hanvonSigndataEvent事件获取签名数据值。
+        */
+        var obj = evt.detail;
+        var signimg = obj.whichsign;//签名按钮ID值
+        alert(signimg);
+        var signdata = obj.signdata;//签名数据
+        alert(signdata);
+    });
+
+    document.addEventListener("hanvonEventName",function(evt) {
+        /*
+          监听hanvonEventName事件获取页面指定元素签名数据值。
+        */
+        var signimg = document.getElementById("signimg").src;
+        var signimg1 = document.getElementById("signimg1").src;
+
+    });
+
+</script>
+</body>
+</html>
+

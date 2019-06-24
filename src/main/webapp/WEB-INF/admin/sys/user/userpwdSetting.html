@@ -1,0 +1,200 @@
+	#include("/common/include/pageTitleBread.html")
+	<div id="page-content">
+			<div class="col-lg-12">
+		        <div class="panel">
+		            <div class="panel-heading">
+		                <h3 class="panel-title">密码修改</h3>
+		            </div>
+		            <input type="hidden"  name="mailCode" class="form-control" value="#(mailCode)">
+		            <form id="editForm" class="panel-body form-horizontal form-padding">
+		            	<div class="form-group">
+		                    <label class="col-md-3 control-label">所属单位</label>
+		                    <div class="col-md-5">
+		                    	<div class="input-group mar-btm">
+			                        <input type="text" id="orgname" class="form-control" disabled value="#(org?org.name:'')">
+			                        <input type="hidden"  name="sysUser.id" class="form-control" value="#(o?o.id:'')">
+		                    	</div>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-3 control-label">用户登录名</label>
+		                    <div class="col-md-9">
+		                        <input type="text" disabled class="form-control"  value="#(o?o.username:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-3 control-label">密码</label>
+		                    <div class="col-md-9">
+		                        <input type="password"  name="sysUser.password" class="form-control"  value="" #if(o) placeholder="如果您不想修改密码,请将此项留空!" #end >
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-3 control-label">密码确认</label>
+		                    <div class="col-md-9">
+		                        <input type="password"  name="password2" class="form-control"  value="" #if(o) placeholder="如果您不想修改密码,请将此项留空!" #end>
+		                    </div>
+		                </div>
+		               	<div class="form-group">
+		                    <label class="col-md-3 control-label">邮箱验证码</label>
+		                    <div class="col-md-9">
+		                        <input type="text" style="width:30%" name="verification" id="verification" class="form-control"  value="" #if(o) placeholder="请输入修改的验证码!" #end>
+		                       <!--  <button class="btn btn-mint" onclick="doPjax('#(ctx)/admin/sys/user/pwdMail?id=#(o.id)');" >获取验证码</button> -->
+		                        <input type="button" id="mailBtn" name="mailBtn" class="btn btn-mint" onclick="sendMail('#(o.id)');" ></input>
+		                    </div>
+		                </div>
+		                <div class="panel-footer">
+		                    <div class="row">
+		                        <div class="col-sm-9 col-sm-offset-3">
+		                            <button class="btn btn-warning" type="reset">重置</button>
+		                            <button class="btn btn-mint" type="submit" >保存</button>
+		                        </div>
+		                    </div>
+		                </div>
+		            </form>
+		        </div>
+		    </div>
+	</div>
+	<script>
+		var ifEdit = "#(o?'1':'0')";//是否是修改页面
+		var validPassword = {};//密码1
+		var validPassword2 = {};//密码2
+		var validUsername = {};//用户名 唯一性校验
+		var validMailcode = {};//验证码校验
+		if(ifEdit=='1'){//如果是修改 , 密码可以为空
+			validPassword = {
+                stringLength: {
+                    max: 15,
+                    message: '*密码长度必须小于15'
+                }
+            };
+			validPassword2 = {
+                stringLength: {
+                    max: 15,
+                    message: '*确认密码长度必须小于15'
+                },
+                identical: {
+                	field: 'sysUser.password',
+                	message: '*两次输入密码不一致'
+                }
+            };
+			validMailcode = {
+					notEmpty: {
+	                    message: '*验证码不为空'
+	                },
+	                stringLength: {
+	                    max: 6,
+	                    message: '*验证码长度为6位'
+	                },
+	                remote: {
+					message: '*验证码错误',
+                    url:ctx+'/admin/sys/user/checkMailCode?pageMailcode='+$("#verification").val(),
+                    delay:1000	
+	                }
+			};
+		}else{//新增的
+				validPassword = {
+	                notEmpty: {
+	                    message: '*密码不能为空'
+	                },
+	                stringLength: {
+	                    max: 15,
+	                    message: '*密码长度必须小于15'
+	                }
+	            }
+				
+				validPassword2 = {
+	                notEmpty: {
+	                    message: '密码不能为空'
+	                },
+	                stringLength: {
+	                    max: 15,
+	                    message: '*确认密码长度必须小于15'
+	                },
+	                identical: {
+	                	field: 'sysUser.password',
+	                	message: '*两次输入密码不一致'
+	                }
+	            }
+		}
+		function selectOneOrg(){
+			//调用选择一个单位组件
+			pointLion.selectOneOrg(function(orgNode){
+				var thisId = $("#orgId").val();//主键
+				$("#orgname").val(orgNode.name);//所选单位名称
+				$("#orgid").val(orgNode.id);//所选单位id
+			},null,null,null,null);
+		}
+		function save(){
+			var data = common_ajax.ajaxFunc("/admin/sys/user/setNewPwd", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , null);
+				doPjax(ctx+'/admin/home');//跳转到首页
+			}
+		}
+		//邮件定时器
+		function mailtimer(time) {
+			 var mailbtn = $("#mailBtn");
+			 mailbtn.attr("disabled", true);  //按钮禁止点击
+			 mailbtn.val(time <= 0 ? "发送验证码" : ("" + (time) + "秒后可发送"));
+			 var hander = setInterval(function() {
+			  if (time <= 0) {
+			   clearInterval(hander); //清除倒计时
+			   mailbtn.val("发送验证码");
+			   mailbtn.attr("disabled", false);
+			   return false;
+			  }else {
+			   $("#mailBtn").val("" + (time--) + "秒后可发送");
+			  }
+			 }, 1000);
+			}
+		
+		
+		function sendMail(senguserid){
+			var sendresult = common_ajax.ajaxFunc("/admin/sys/user/pwdMail",{"id":senguserid},"json", null);
+			if(sendresult.success){
+				 $("#mailBtn").val();
+				pointLion.alertMsg(sendresult.message, "success" , "small" , null);//弹窗提示邮件已发送
+				//$('#mailBtn').prop('disabled', true);//按钮设置倒计时
+				mailtimer(60);//按钮设置倒计时
+			}else{
+				//pointLion.alertMsg(sendresult.message,"danger","small",null);
+			}
+		}
+		function resetVali(){
+			if(!$("#editForm").data('bootstrapValidator').isValid()) {  
+		        $("#editForm").data('bootstrapValidator').resetForm();  
+		    }
+		}
+		$(document).ready(function() {
+			
+			$('#mailBtn').val("发送验证码");
+		    $('#editForm').bootstrapValidator({
+		    		excluded:[":hidden"],//关键配置，表示只对于隐藏域不进行验证，其他的表单元素都要验证
+		            fields: {
+		            	"sysUser.orgName":{
+		            		validators: {
+				                notEmpty: {
+				                    message: '*所属单位不能为空'
+				                }
+				            }
+		            	},
+		            	"sysUser.username": {
+						    validators: validUsername
+		                },
+		                "sysUser.password": {
+						    validators: validPassword
+		                },
+		                "password2": {
+						    validators: validPassword2
+		                },
+		                "verification":{
+		                	validators: validMailcode
+		                },
+
+		            }
+		        }).on("success.form.bv", function (e) {
+		            save();
+		            return false;//阻止表单跳转
+		        });
+		});
+	</script>

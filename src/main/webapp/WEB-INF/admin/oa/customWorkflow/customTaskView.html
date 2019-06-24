@@ -1,0 +1,165 @@
+#include("/common/include/include.html")
+<style>
+    .lay-body{
+        margin-top: 52px;
+        overflow-y: auto;
+        overflow-x: unset;
+    }
+    .lay-body table{
+        font-size: 1em;
+    }
+    .lay-header{
+        position: absolute;
+        top: 0px;
+        width: 100%;
+    }
+</style>
+<div id="container" class="modal-dialog" style="width:100%">
+    <div class="modal-content">
+        <div class="modal-header lay-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title">单据流转历史</h4>
+        </div>
+
+        <div class="modal-body lay-body taskHisList">
+            #if(hislist)
+            <div class="modal-body">
+                <div class="row">
+                    <div id="nodes">
+                        <div class="rect" style="background: rgba(0, 204, 51, 1)">
+                            <p>开始</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="fixed-table-container bootstrap-table" style="padding-bottom: 0px;">
+                    <table id="treetable" class="demo-add-niftycheck table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th style="width: 100px;"><div class="th-inner">任务名称</div></th>
+                            <th style="width: 100px;"><div class="th-inner">办理人</div></th>
+                            <th style="width: 200px;"><div class="th-inner">办理意见</div></th>
+                            <th style="width: 140px;"><div class="th-inner">审批状态</div></th>
+                            <th style="width: 140px;"><div class="th-inner">附件</div></th>
+                            <th style="width: 140px;"><div class="th-inner">审批时间</div></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        #for(t:hislist)
+                        <tr>
+                            <td>#(t.taskName)</td>
+                            <td>#(t.assignee)</td>
+                            <td>#(t.message)</td>
+                            <td>#if(t.status==1)
+                                <span style="color:green">执行中</span>
+                                #else if(t.status==2)
+                                <span style="color:green">同意</span>
+                                #else if(t.status==3)
+                                <span style="color:red">不同意</span>
+                                #else if(t.status==4)
+                                <span style="color:red">退回</span>
+                                #else
+
+                                #end
+                            </td>
+                            <td>#(t.ass)</td>
+                            <td>#(t.endTime?t.endTime:"")</td>
+                        </tr>
+                        #end
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            #end
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        var clientH = document.body.clientHeight-54;
+        $(".lay-body").css("height",clientH+"px");
+        var datanodes = '#(nodesdata)';
+        var currentmodelnodeid = '#(Currentmodelnodeid)';
+        var iscompate = '#(iscompate)';
+        rect(datanodes,currentmodelnodeid,iscompate);
+    });
+    function rect(nodedata,currentmodelnodeid,iscompate){
+        console.log("生成节点...");
+        console.log(nodedata);
+        var nodeColor="rgba(0, 204, 51, 1)";
+        $.each(JSON.parse(nodedata),function(n,value) {
+            console.log(value);
+            if(currentmodelnodeid==value.columns.id){
+                nodeColor="rgba(255, 204, 0, 1)"
+            }
+            let divnode = document.createElement("div");
+
+            let divarrow = document.createElement("div");
+            //divarrow.classList.add("form-group");
+            divarrow.innerHTML += '<div class="arrow-body"></div>\n' +
+                '<div class="arrow-footer"></div>\n';
+            let div = document.createElement("div");
+            div.classList.add("rect");
+            div.classList.add("node");
+            div.style.background=nodeColor;
+            //div.setAttribute("node-number","")
+            div.innerHTML += ' <p>' + value.columns.name + '</p>\n' ;
+
+            div.innerHTML += '</div>\n';
+            divnode.appendChild(divarrow);
+            divnode.appendChild(div);
+            document.getElementById('nodes').appendChild(divnode);
+            if(currentmodelnodeid==value.columns.id){
+                nodeColor="#ccc";
+            }
+        });
+        let divnode = document.createElement("div");
+        divnode.innerHTML += '<div class="arrow-body"></div>\n' +
+            '<div class="arrow-footer"></div>\n' ;
+        let divend = document.createElement("div");
+        divend.classList.add("rect");
+        divend.innerHTML += '<p>结束</p></div>\n' ;
+        divend.style.background=nodeColor;
+        document.getElementById('nodes').appendChild(divnode);
+        document.getElementById('nodes').appendChild(divend);
+
+    }
+</script>
+<style>
+    div.rect {
+        border-radius: 20px;
+        border:2px solid;
+        padding: 10px 0 0 0;
+        text-align: center;
+        width:10%;
+        float:left;
+        margin: 0 1% 0;
+    }
+
+    div.rect:hover {
+        cursor: pointer;
+    }
+    div.arrow-body {
+        width: 30px;
+        height: 10px;
+        background: #ccc;
+        margin: 15px auto 0;
+        float:left;
+    }
+
+    div.arrow-footer {
+        width: 0;
+        height: 0;
+        border-width: 15px 0 15px 15px  ;
+        border-style: solid;
+        border-color: transparent  transparent  transparent #ccc; /*灰 透明 透明 */
+        float:left;
+        margin: 5px auto 0;
+    }
+    #nodes {
+        width: 100%;
+        float:left;
+    }
+    p{
+        color: black;
+    }
+</style>

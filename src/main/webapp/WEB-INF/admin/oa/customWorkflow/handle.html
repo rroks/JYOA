@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南方物业OA</title>
+    #include("/common/include/include.html")
+    <script src="#(ctx)/common/js/demo/nifty-demo.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/morris.min.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/raphael-js/raphael.min.js"></script>
+    <script src="#(ctx)/common/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <style>
+        .lay-body{
+            margin-top: 52px;
+            overflow-y: auto;
+            overflow-x: unset;
+        }
+        .lay-header{
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="modal-dialog" style="width:100%">
+    <div class="modal-content" style="height: 100%;">
+        <div class="modal-header lay-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title text-center">审批办理</h4>
+        </div>
+        <div class="modal-body lay-body">
+            <div class="col-lg-12">
+                <div  class="panel">
+                    <form id="taskForm" class="panel-body form-horizontal form-padding">
+                        <input name="oaCustomflowComment.id" type="hidden" >
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" style="margin-top: 5px">审批意见:</label>
+                            <div class="col-md-8" id="modelstate">
+                                <label class="radio-inline"> <input type="radio" name="optionsRadios" value="agree" checked> 同意</label>
+                                <label class="radio-inline"><input type="radio" name="optionsRadios" value="disagree"> 不同意</label>
+                                <label class="radio-inline"><input type="radio" name="optionsRadios" value="back"> 退回</label>
+                                <!--<label class="radio-inline"><input type="radio" name="optionsRadios" value="stop"> 终止</label>-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label">办理意见:</label>
+                            <div class="col-md-8">
+                                <textarea  name="oaCustomflowComment.handle_opinion" rows="8" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group " >
+                            <label class="col-md-2 control-label" STYLE="float: left;">手写签名:</label>
+                            <div class="col-md-6" >
+                                <input name="signBase64Stream" type="hidden">
+                                <img id="signimg"  width="100" height="60"/>
+                                <input type="button" disabled = "disabled" id="pluginapp" class="btn btn-mint" onClick="btn_pluginapp()" style="float: left;"  value="请签字"></input>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" STYLE="float: left">附件:</label>
+                            #@installCustomAttachment(o?o.id:'','edit')
+                            <!--<div class="col-md-8">
+                                <button  type="button" onclick="selectManyOrg()" class="btn-primary btn-sm" style="float: left;">选择</button>
+                            </div>-->
+                        </div>
+                    </form>
+                </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="text-center">
+                                <button class="btn btn-primary col-md-offset-1" type="button" onclick="save()">提交</button>
+                                <button class="btn btn-primary col-md-offset-1" type="button" onclick="beginjointly()">发起协办</button>
+                                <button class="btn btn-default col-md-offset-1" type="button" onclick="cancel()">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <HR>
+        #if(o)
+        <div class="panel-footer">
+            <h4 class="text-center">下一审批节点</h4>
+            <div class="node" style="margin-bottom: 5%">
+                <input type="hidden"  name="oaCustomflowModelnode.id" class="form-control" value="#(o?o.id:'')">
+                <div class="form-group">
+                    <label class="col-md-2 control-label col-md-offset-1" style="float: left;"><small  style="color: #FF0000">*</small>节点名称:</label>
+                    <div class="col-md-8">
+                        <input class="col-md-12" type="text"  name="oaCustomflowModelnode.name"  class="form-control"  value="#(o?o.name:'')" readonly>
+                    </div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label class="col-md-2 col-md-offset-1 control-label " style="float: left;"><small  style="color: #FF0000">*</small>审批类型:</label>
+                    <div class="col-md-8" >
+                        <input class="col-md-12" type="text" name="oaCustomflowModelnode.approvaltype"   class="form-control" value="#(o?o.approvaltypename:'')"   readonly>
+                    </div>
+                </div>
+                <br>
+                #if(o.approvaltype!= 3)
+                <div class="form-group" >
+                    <label class="col-md-2 col-md-offset-1 control-label" style="float: left;"><small  style="color: #FF0000">*</small>审批人:</label>
+                    <div class="col-md-8" >
+                        <input class="col-md-12" type="text"   class="form-control"  value="#(o?o.approvalname:'')"   readonly>
+                    </div>
+                </div>
+                #else
+                <div class="form-group" >
+                    <input type="hidden" id="approvaluserid" class="form-control"  >
+                    <label class="col-md-2 col-md-offset-1 control-label" style="float: left;"><small  style="color: #FF0000">*</small>审批人:</label>
+                    <button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" >选择</button>
+                </div>
+                #end
+            </div>
+        </div>
+        #end
+    </div>
+</div>
+<script>
+    function save(){
+        var selecttype =$("input[name='optionsRadios']:checked").val();
+        if("back"==selecttype){
+            var params = decodeURIComponent($('#taskForm').serialize(),true); //关键点
+            params = encodeURI(encodeURI(params));
+            layer.open({
+                type: 2,
+                title: false, //不显示标题栏
+                area: ['50%', '80%'],
+                shade: 0.8,
+                id: 'Customback', //设定一个id，防止重复弹出
+                resize: false,
+                closeBtn: false,
+                isOutAnim : false ,
+                btnAlign: 'c',
+                content: ctx+"/admin/oa/CustomFlow/Case/backPage?casenodeid="+'#(casenodeid)'+"&buinessid="+'#(buinessid)'+"&approval_opinion="+selecttype+"&"+params+"&"+"&approvaluserid="+encodeURIComponent($("#approvaluserid").val()),
+                success: function(layero){
+                }
+            });
+        }
+        else{
+            if(document.getElementById("approvaluserid"))
+            {
+                var approvaluserid = $("#approvaluserid").val();
+                if(approvaluserid==''){
+                    pointLion.alertMsg("请选择下一级的审批人！");
+                    return;
+                }
+            }
+            pointLion.confimMsg("确定要提交该任务 ？ <br/> 点击确认进行提交 , 点击取消取消该操作",null,function(){
+                var data = common_ajax.ajaxFunc("/admin/oa/CustomFlow/Case/saveComment?casenodeid="+'#(casenodeid)'+"&buinessid="+'#(buinessid)'+"&approval_opinion="+selecttype, $('#taskForm').serialize()+"&"+"approvaluserid="+encodeURIComponent($("#approvaluserid").val()), "json", null);
+                if(data.success){
+                    pointLion.alertMsg(data.message , "success" , "small" , function(){
+                        parent.successCompleteTask();
+                        window.parent.cancel();
+                        cancel();
+                    });
+
+                }else{
+                    pointLion.alertMsg(data.message , "error" , "small" , function(){
+                        alert(data.message);
+                    });
+                }
+            });
+        }
+
+    }
+    function beginjointly(){
+        layer.open({
+            type: 2,
+            title: false, //不显示标题栏
+            area: ['90%', '90%'],
+            shade: 0.8,
+            id: 'beginjointly', //设定一个id，防止重复弹出
+            resize: false,
+            closeBtn: false,
+            isOutAnim : false ,
+            btnAlign: 'c',
+            content: ctx+"/admin/oa/CustomFlow/Case/beginJoinlty?caseid="+'#(caseid)',
+            success: function(layero){
+            }
+        });
+    }
+    function cancel(){
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        parent.layer.close(index);
+    }
+    $(document).ready(function(){
+        initFullHeight();//初始化高度
+    });
+    function close(){
+        parent.successCompleteTask();
+        window.parent.cancel();
+        cancel();
+    }
+    function openSlectFlowCCDialog(element){
+        var flowcc =  $(element).siblings('input');
+        pointLion.selectManyUser4CC("orgid="+encodeURIComponent("#root")+"&flowCCId="+encodeURIComponent($(flowcc).val()),function(data){
+            //if(data.idData != null && data.idData !=""){
+            flowcc.val(data.idData);
+            //$("#flowCCName").val(data.nameData);
+            //	}
+        });
+    }
+
+</script>
+<style>
+    div.rect {
+        border-radius: 20px;
+        border:2px solid;
+        text-align: center;
+        padding: 10px 0 0 0;
+        margin: 5px 5px;
+    }
+
+    div.rect:hover {
+        cursor: pointer;
+    }
+    div.arrow-body {
+        width: 20px;
+        height: 50px;
+        background: #ccc;
+        margin: 10px auto 0;
+    }
+
+    div.arrow-footer {
+        width: 0;
+        height: 0;
+        border-width: 30px 30px 0;
+        border-style: solid;
+        border-color: #ccc transparent transparent; /*灰 透明 透明 */
+        margin: 0 auto;
+    }
+    #nodes {
+        width: 40%;
+        margin: auto auto;
+    }
+</style>

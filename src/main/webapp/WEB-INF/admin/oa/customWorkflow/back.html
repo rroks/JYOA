@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南方物业OA</title>
+    #include("/common/include/include.html")
+    <script src="#(ctx)/common/js/demo/nifty-demo.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/morris.min.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/raphael-js/raphael.min.js"></script>
+    <script src="#(ctx)/common/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <style>
+        .lay-body{
+            margin-top: 52px;
+            overflow-y: auto;
+            overflow-x: unset;
+        }
+        .lay-header{
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="modal-dialog" style="width:100%">
+    <div class="modal-content" style="height: 100%;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title text-center">选择退回节点</h4>
+        </div>
+        <div class="modal-body">
+            <div id="nodes" style="width: 100%">
+                <div class="row">
+                    <div class="row">
+                        <label class="col-md-2" style="float: left">节点名称:</label>
+                        <p class="col-md-2" style="float: left">申请人发起</p>
+                        <!--<label class="col-md-2" style="float: left">审批类型:</label>
+                        <p class="col-md-2" style="float: left">起点</p>-->
+                        <button class="btn btn-primary col-md-2" type="button" onclick="back(0,this,'')" STYLE="float: right;margin-right: 1%">退回</button>
+                    </div>
+                    <label class="col-md-2 " style="float: left">申请人:</label>
+                    <p class="col-md-2 " style="float: left">#(commituser)</p>
+                </div>
+                <hr>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function rect(nodedata){
+        $.each(JSON.parse(nodedata),function(n,value) {
+            console.log(value);
+            let div = document.createElement("div");
+            div.classList.add("row");
+            //div.setAttribute("node-number","")
+            div.innerHTML += '<input type="hidden"  name="nodeid" class="form-control">\n' +
+                '<div class="row">\n' +
+                '            <label class="col-md-2" style="float: left">节点名称:</label>\n' +
+                '            <p class="col-md-2" style="float: left">' + value.columns.name + '</p>' +
+                '            <label class="col-md-2" style="float: left">审批类型:</label>\n' +
+                '            <p class="col-md-2" style="float: left">' + value.columns.approvaltype + '</p>'+
+                '<button class="btn btn-primary col-md-2" type="button" onclick="back(\'' + value.columns.id + '\',this,\'' + value.columns.approvaltype + '\')" STYLE="float: right;margin-right: 1%">退回</button>\n' +
+                '</div>\n' ;
+            if (value.columns.approvaltype == "单人审批") {
+                div.innerHTML += '<label class="col-md-2 " style="float: left">申请人:</label>\n' +
+                    '<p class="col-md-2 " style="float: left">' + value.columns.approvalname + '</p>';
+            }
+            if (value.columns.approvaltype == "多人审批") {
+                div.innerHTML += '<label class="col-md-2 " style="float: left">申请人:</label>\n' ;
+                $.each(value.columns.userList,function(n,value) {
+                    div.innerHTML +='<label style="float: left"><input type="checkbox" name="backuser"  value="' + value.split(',')[0] + '"/>' +value.split(',')[1]  + '</label>\n';
+                });
+            }
+            if (value.columns.approvaltype == "自定义审批") {
+                div.innerHTML += '<input type="hidden"  name="oaCustomflowModelnodeListuserid" class="form-control">'+
+                    '<label class="col-md-2 " style="float: left">审批人:</label>\n' +
+                    '<button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>';
+            }
+            div.innerHTML += '</div>\n';
+            document.getElementById('nodes').appendChild(div);
+            let hr = document.createElement("hr");
+            document.getElementById('nodes').appendChild(hr);
+        });
+    }
+    function back(modelnodeid,element,approvaltype){
+        selectuserid = [];
+        approvaltypecode="";
+        var customuserid="";
+        if(modelnodeid==0){
+
+        }
+        else{
+            if("多人审批"==approvaltype){/*多人审批*/
+                approvaltypecode=2;
+                var tes = $(element).parent("div").siblings("label").find("input:checkbox[name='backuser']:checked");
+                $(tes).each(function(n,value) {
+                    selectuserid.push($(this).val());
+                });
+            }
+            else if("自定义审批"==approvaltype){/*自定义审批*/
+                approvaltypecode=3;
+                var flowcc = $(element).siblings('input');
+                customuserid = $(flowcc).val();
+                if(!customuserid){
+                    alert("请选择自定义审批节点审批人员！");
+                    return;
+                }
+            }
+            else if("单人审批"==approvaltype){/*单人审批*/
+                approvaltypecode=1;
+            }
+        }
+        console.log("good");
+        $.ajax({
+            type:'post',
+            url:ctx+"/admin/oa/CustomFlow/Case/back?casenodeid="+'#(casenodeid)'+"&buinessid="+'#(buinessid)',
+            data:{
+                approvaltype:approvaltypecode,
+                userlist:JSON.stringify(selectuserid),
+                modelnodeid:modelnodeid,
+                customuserid:customuserid,
+                handle_opinion:'#(handle_opinion)',
+                sign_address:'#(sign_address)'
+            },
+            cache:false,
+            dataType:'json',
+            success:function(Datas){
+                if(Datas.success){
+                    window.parent.close();
+                    console.log("good");
+                    parent.layer.closeAll();
+                }
+                else{
+                    alert(Datas.message);
+                }
+
+            },
+            error:function(Datas){
+                alert("请求失败");
+            }
+        });
+
+    }
+
+    function openSlectFlowCCDialog(element) {
+        var flowcc = $(element).siblings('input');
+        pointLion.selectManyUser4CC("orgid=" + encodeURIComponent("#root") + "&flowCCId=" + encodeURIComponent($(flowcc).val()), function (data) {
+            //if(data.idData != null && data.idData !=""){
+            flowcc.val(data.idData);
+            //$("#flowCCName").val(data.nameData);
+            //	}
+        });
+    }
+    $(document).ready(function(){
+        $("#leftPanel").css("height",document.body.clientHeight-132);
+        initFullHeight();//初始化高度
+        var datanodes = '#(nodesdata)';
+        rect(datanodes);
+    });
+
+</script>

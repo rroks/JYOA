@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南方物业OA</title>
+    #include("/common/include/include.html")
+    <script src="#(ctx)/common/js/demo/nifty-demo.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/morris.min.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/raphael-js/raphael.min.js"></script>
+    <script src="#(ctx)/common/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <script src="#(ctx)/common/js/common/pointLion.js"></script>
+    <style>
+        .lay-body{
+            margin-top: 52px;
+            overflow-y: auto;
+            overflow-x: unset;
+        }
+        .lay-header{
+            position: absolute;
+            top: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="modal-dialog" style="width:100%">
+    <div class="modal-content" style="height: 100%;">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title text-center">协办反馈</h4>
+        </div>
+        <div  class="modal-body">
+            <form id="taskForm" class="panel-body form-horizontal">
+                <div class="form-group">
+                    <input type="hidden" id="userId" name="oaCustomflowJoinlty.id" value="#(o?o.id:'')">
+                    <label class="col-md-1 control-label" STYLE="float: left;">发起人:</label>
+                    <div class="col-md-5"  STYLE="float: left;">
+                        <p STYLE="margin-top: 9px">#(o.setCreateUsername)</p>
+                    </div>
+                    <label class="col-md-1 control-label" STYLE="float: left;">发起时间:</label>
+                    <div class="col-md-5" >
+                        <p STYLE="margin-top: 9px"> #(o.create_time)</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">协办要求:</label>
+                    <div class="col-md-10">
+                        <!-- <input type="text"  name="#(formModelName).des" class="form-control"  value="#(o?o.des:'')" #if(view=='detail') readonly #end> -->
+                        <textarea rows="8" name="oaCustomflowJoinlty.request_content" class="form-control"  readonly>#(o.request_content)</textarea>
+                        <!-- <small class="help-block">请输入经办人陈述</small> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label" STYLE="float: left;">协办附件:</label>
+                    <input id="requestid" name="oaCustomflowJoinlty.request_id" type="hidden" value="#(o?o.request_id:'')">
+                    <a href="javascript:void(0);" onclick="doUploadAttachment(1,'detail')">
+                        <button class="btn btn-warning" type="button">附件</button>
+                        <!--<span class="pull-right badge badge-success" style="position: absolute;right: -8px;" id="businessAttachmentCount_#(businessId)">0</span>-->
+                    </a>
+                    <!--<div class="col-md-10">
+                        <button  type="button" onclick="selectManyOrg()" class="btn-primary btn-sm" style="float: left;">查看</button>
+                    </div>-->
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">协办反馈:</label>
+                    <div class="col-md-10">
+                        <!-- <input type="text"  name="#(formModelName).des" class="form-control"  value="#(o?o.des:'')" #if(view=='detail') readonly #end> -->
+                        <textarea rows="8" name="oaCustomflowJoinlty.response_content" class="form-control" #if(view=='detail') readonly #end>#(o?o.response_content:'')</textarea>
+                        <!-- <small class="help-block">请输入经办人陈述</small> -->
+                    </div>
+                </div>
+                <div class="form-group">
+                <label class="col-md-1 control-label" STYLE="float: left;"><small  style="color: #FF0000">*</small>附件:</label>
+                    <input id="responseid" name="oaCustomflowJoinlty.response_id" type="hidden" value="#(o?o.response_id:'')">
+                    <a href="javascript:void(0);" onclick="doUploadAttachment(2,'edit')">
+                        <button class="btn btn-warning" type="button">附件</button>
+                        <!--<span class="pull-right badge badge-success" style="position: absolute;right: -8px;" id="businessAttachmentCount_#(businessId)">0</span>-->
+                    </a>
+                <!--<div class="col-md-8">
+                    <button  type="button" onclick="selectManyOrg()" class="btn-primary btn-sm" style="float: left;">选择</button>
+                </div>-->
+        </div>
+            </form>
+            #if(view=='edit')
+            <div class="form-group">
+                <div class="row">
+                    <div class="text-center">
+                        <button class="btn btn-success" type="button" onclick="save(1)">反馈</button>
+                        <button class="btn btn-default" type="button" onclick="cancel()">返回</button>
+                    </div>
+                </div>
+            </div>
+            #end
+        </div>
+    </div>
+</div>
+<script>
+    function save(){
+        pointLion.confimMsg("确定要提交该任务 ？ <br/> 点击确认进行提交 , 点击取消取消该操作",null,function(){
+            var data = common_ajax.ajaxFunc("/admin/oa/CustomFlow/Case/createJoinlty?type=2", $('#taskForm').serialize(), "json", null);
+            if(data.success){
+                pointLion.alertMsg(data.message , "success" , "big" , function(){
+                    parent.layer.closeAll();
+                });
+
+            }else{
+                pointLion.alertMsg(data.message , "error" , "big" , function(){
+                    alert(data.message);
+                });
+            }
+        });
+    }
+    function cancel(){
+        parent.layer.closeAll();
+    }
+    function openSlectFlowCCDialog(element){
+        orgid =encodeURIComponent("#root");
+        if(!orgid){orgid="";}
+        var index = layer.open({
+            type: 2,
+            title: false, //不显示标题栏
+            area: ['100%', '100%'],
+            offset:['0px','0px'],
+            shade: 0.8,
+            zindex:999,
+            id: 'selectOneUser', //设定一个id，防止重复弹出
+            resize: false,
+            closeBtn: false,
+            isOutAnim : false ,
+            btn: ['确定', '取消'],
+            btnAlign: 'c',
+            content: ctx+'/admin/sys/user/openSelectOneUserPage?orgid='+orgid,
+            success: function(layero){
+                selectManyUserIframe = window[layero.find('iframe')[0]['name']];
+            },
+            yes: function(){
+                var data = selectManyUserIframe.selectMankUserOK();
+                console.log(data);
+                if(data){
+                    $("#userId").val(data.idData);
+                    layer.close(index);
+                }
+            }
+        });
+    }
+    $(document).ready(function(){
+    });
+    function doUploadAttachment(type,view){
+        var busid ;
+        if(type==1){
+            busid = $("#requestid").val();
+        }else{
+            busid = $("#responseid").val();
+        }
+        if(busid){
+            pointLion.openBusinessAttachmentPage(busid,view,function(){
+                //setAttachmentCount_#(businessId)();//关闭之后回调
+            });
+        }else{
+            pointLion.alertMsg("请先保存再上传附件！" , "danger" , "small" , null);
+        }
+    }
+
+</script>

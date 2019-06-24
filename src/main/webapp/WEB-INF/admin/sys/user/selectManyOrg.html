@@ -1,0 +1,76 @@
+#include("/common/include/include.html")
+<style>
+	.lay-body{
+		margin-top: 52px;
+		overflow-y: auto;
+		overflow-x: unset;
+	}
+	.lay-header{
+		position: absolute;
+		top: 0px;
+		width: 100%;
+	}
+</style>
+<div class="modal-dialog" style="width:100%">
+    <div class="modal-content" style="height: 100%;">
+        <div class="modal-header lay-header">
+            <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+            <h4 class="modal-title">选择组织</h4>
+        </div>
+
+        <div class="modal-body lay-body">
+            <ul id="treeDemo" class="ztree"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+	//树
+	var userid = "#(userid)";
+	var setting = {
+			check: {
+				enable: true,
+				chkboxType: { "Y": "s", "N": "s" }
+			},
+			async : {
+				enable : true,
+				//url : ctx + "/admin/sys/org/getOrgTreeOnlyLeaf"
+				url : ctx + "/admin/sys/org/getOrgTree"
+			},
+			callback: {
+				onAsyncSuccess: function(){//默认选中已有的角色
+					var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+					var data = common_ajax.ajaxFunc("/admin/oa/hrorg/getAllCheckedOrgByUserid", {"userid":userid}, "json", null);
+					if(data&&data.length>0){
+						$.each(data,function(i,d){
+							var node = zTree.getNodeByParam("id", d.id, null);//根据id获取节点
+							if(node){
+								//zTree.hideNode(node);
+								//zTree.setChkDisabled(node,true,null,null);
+								zTree.checkNode(node, true, false, true);//将节点选中
+							}
+						})
+					}
+				},
+				
+				
+			}
+/* 			callback : {
+				onCheck  : checkNode
+			}  */
+	};
+	/***
+	* 选择树
+	**/
+	function checkNode1() {
+		var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+		var node = treeObj.getCheckedNodes(true);
+		//parent.pointLion.setManyOrgNode4Per(node);
+		return node;
+	}
+	$(document).ready(function() {
+		var treeObj = $.fn.zTree.init($("#treeDemo"), setting);//初始化树
+		var clientH = document.body.clientHeight-54;
+		$(".lay-body").css("height",clientH+"px");
+	});
+</script>

@@ -1,0 +1,91 @@
+	#include("/common/include/pageTitleBread.html")
+	<div id="page-content">
+			<div class="col-lg-12">
+		        <div class="panel">
+		            <div class="panel-heading">
+		                <h3 class="panel-title" style="text-align:center;">
+		                	添加
+		                </h3>
+		            </div>
+		            <form id="editForm" class="panel-body form-horizontal form-padding">
+						<input type="hidden"  name="#(formModelName).id" class="form-control" value="#(o?o.id:'')">
+			                 <div class="form-group">
+		                    <label class="col-md-2 control-label">版本号</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="sysMobileVersion.version" class="form-control"  value="#(o?o.version:'')">
+		                        <small class="help-block">请注意版本号命名规则(如1.0.0)</small>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">标题</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="sysMobileVersion.title" class="form-control"  value="#(o?o.title:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">版本内容介绍</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="sysMobileVersion.content" class="form-control"  value="#(o?o.content:'')">
+		                    </div>
+		                </div>
+            		    <div class="form-group">
+		                    <label class="col-md-2 control-label">苹果下载地址</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="sysMobileVersion.ios_uri" class="form-control"  value="#(o?o.ios_uri:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">安卓下载地址</label>
+		                    <div class="col-md-8">
+		                        <input type="text"  name="sysMobileVersion.android_uri" class="form-control"  value="#(o?o.android_uri:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+	                    	<label class="col-md-2 control-label">是否发布</label>
+                            <div class="col-md-8">
+		                           <input id="sysMobileVersionyes" class="magic-radio" type="radio" checked name="sysMobileVersion.if_publish" value="1" #if(o&&o.sex=="1") checked #end>
+		                           <label for="sysMobileVersionyes">是</label>
+		                           <input id="sysMobileVersionno" class="magic-radio" type="radio" name="sysMobileVersion.if_publish" value="0" #if(o&&o.sex=="0") checked #end>
+		                           <label for="sysMobileVersionno">否</label>
+		                    </div>
+                        </div>
+                 
+		                	#if(view=='detail')
+			                
+				            #else
+			            	<div class="panel-footer">
+			                    <div class="row">
+			                        <div class="col-sm-8 col-sm-offset-3">
+			                            <button class="btn btn-warning" type="reset" #if(view=='detail') disabled #end>重置</button>
+			                            <button class="btn btn-mint" type="submit" #if(view=='detail') disabled #end>保存</button>
+			                        </div>
+			                    </div>
+			                </div>
+				            #end
+		            </form>
+		        </div>
+		    </div>
+	</div>
+	<script>
+		function save(){
+			var data = common_ajax.ajaxFunc("/admin/sys/mobileversion/save", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+					doPjax(ctx+'/admin/sys/mobileversion/getListPage');//跳转到列表页
+				},data);
+			}else{
+				pointLion.alertMsg(data.message , "danger" , "small" , function(){
+					$(".btn").removeAttr("disabled");
+				},data);
+			}
+		}
+		$(document).ready(function() {
+			$('#editForm').bootstrapValidator({
+	            fields: {
+	            }
+	        }).on("success.form.bv", function (e) {
+	            save();
+	            return false;//阻止表单跳转
+	        });
+		});
+	</script>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>南方物业OA引导页</title>
+    <input type="hidden"  id="androidinput" name="androidinput" class="form-control" value="#(androidUri)">
+    <input type="hidden"  id="iosinput" name="iosinput" class="form-control" value="#(iosUri)">
+   <!--  <script src="/js/jquery-3.2.1.min.js"></script> -->
+    <script src="#(ctx)/common/js/jquery-2.2.4.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #tip {
+            width: 100%;
+            background-color: #343434;
+            color: #7f7e7e;
+            padding: 15px;
+            font-size: 16px;
+            line-height: 30px;
+        }
+
+        #main {
+        	position: relative;
+            width: 100%;
+            height: 100%;
+            background-image: url(#(ctx)/common/img/OAdownload/bg.png);
+            background-repeat: no-repeat;
+            background-size: 100%;
+        }
+
+        #phone {
+            width: 100%;
+            position: absolute;
+            bottom: 10%;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        #phone #android, #phone #iphone {
+            width: 35%;
+            height: 120px;
+            display: flex;
+            justify-content: space-around;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #phone a {
+            width: 128px;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            text-decoration: none;
+            border: 1px solid #079ce1;
+            border-radius: 30px;
+            color: #079ce1;
+        }
+
+        #phone img {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="tip">
+    点击右上角按钮，然后在弹出的菜单中，点击在浏览器中打开，即可安装
+</div>
+<div id="main">
+    <div id="phone">
+        <div id="android">
+            <img src="#(ctx)/common/img/OAdownload/android.png" alt="">
+            <a href="#(androidUri)">Android下载</a>
+        </div>
+        <div id="iphone">
+            <img src="#(ctx)/common/img/OAdownload/ios.png" alt="">
+            <a href="#(iosUri)" >iPhone下载</a>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        function is_weixn() {
+            var ua = navigator.userAgent.toLowerCase();
+            if (ua.match(/MicroMessenger/i) == "micromessenger") {
+                $('#tip').css('display', 'block')
+                return true;
+            } else {
+                $('#tip').css('display', 'none')
+                return false;
+            }
+        }
+
+        is_weixn();
+    });
+</script>
+</body>
+
+</html>
