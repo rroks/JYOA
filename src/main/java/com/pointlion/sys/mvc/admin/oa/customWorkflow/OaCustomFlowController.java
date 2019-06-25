@@ -161,6 +161,20 @@ public class OaCustomFlowController extends BaseController {
 
         renderSuccess();
     }
+
+    /**
+     * 停启用自定义审批流程
+     * @author Fen
+     */
+    public void enableCustomProcess() {
+        String processId = getPara("customProcessId");
+        OaCustomFlowmodel customProcess = service.getById(processId);
+        int processStatus = Integer.valueOf(getPara("status"));
+        customProcess.setState(processStatus);
+        customProcess.update();
+        renderSuccess(customProcess.getState().toString());
+    }
+
     /***
      * 获取编辑页面
      */

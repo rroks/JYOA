@@ -138,10 +138,45 @@
             var a = '';
             a = a + '<a class="WebUploader label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/CustomFlow/getEditPage?id='+row.id+'&view=edit\')" href="javascript:void(0);" target="_blank">修改</a>&nbsp;';
             a = a + '<a class="label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/CustomFlow/getEditPage?id='+row.id+'&view=detail\')"  href="javascript:void(0);" target="_blank">查看</a>&nbsp;';
-            a = a + '<a class="label label-table label-success" href=\''+ctx+'/admin/sys/template/downloadFile?id='+row.id+'\' target="_blank">停用</a>&nbsp;';
+
+            var enableBtn;
+            var enableState;
+            if (row.state === 0 || row.state === 2) {
+                enableBtn = '启用';
+                enableState = 1;
+            } else if (row.state === 1) {
+                enableBtn = '停用';
+                enableState = 0;
+            }
+            a = a + '<a class="label label-table label-success" id="'+ row.id + '" onclick=\'enableProcess("' + row.id +'", "' + enableState + '")\' target="_blank">' + enableBtn + '</a>&nbsp;';
             return a;
         }
     }];
+    function enableProcess(processId, status) {
+        $.ajax({
+            type:'post',
+            url:ctx+"/admin/oa/CustomFlow/enableCustomProcess",
+            data:{
+                customProcessId: processId,
+                status: status
+            },
+            cache:false,
+            dataType:'json',
+            success:function(data){
+                var caller = document.getElementById(processId);
+                if (data.message === "1") {
+                    caller.innerText = "停用";
+                    caller.setAttribute("onclick", "enableProcess(\"" + processId + "\", \"0\")");
+                } else if (data.message === "0") {
+                    caller.innerText = "启用";
+                    caller.setAttribute("onclick", "enableProcess(\"" + processId + "\", \"1\")");
+                }
+            },
+            error:function(){
+                alert("请求失败")
+            }
+        });
+    }
     var opt = {
         //请求方法
         method: 'post',
