@@ -152,6 +152,9 @@
             return a;
         }
     }];
+
+    // 停用，启用流程
+    // @author Fen
     function enableProcess(processId, status) {
         $.ajax({
             type:'post',
@@ -177,6 +180,7 @@
             }
         });
     }
+
     var opt = {
         //请求方法
         method: 'post',

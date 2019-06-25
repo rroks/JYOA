@@ -47,8 +47,18 @@ public class OaCustomFlowService {
         }if(StrKit.notBlank(param.get("endTime"))){
             sql = sql + "  and o.create_time <= '"+param.get("endTime")+" 23:59:59'";
         }
+        if(StrKit.notBlank(param.get("orgid"))){
+            sql+=" and o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='"+param.get("orgid")+"')";
+        }
         sql = sql + "order by o.create_time desc";
         return Db.paginate(pnum, psize, " select o.id,o.name,o.type_1,o.type_2,o.create_time,o.state,o.node_sum,o.execute_sum,o.visible_org,p.name create_user ,type.name type_3", sql);
+    }
+
+    /**
+     * 非管理员用户获取流程列表
+     */
+    public Page<Record> getCustomProcess(Map<String, String> params) {
+        return null;
     }
 
     /***

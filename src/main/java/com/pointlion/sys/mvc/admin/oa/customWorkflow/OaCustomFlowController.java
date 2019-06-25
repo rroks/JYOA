@@ -90,6 +90,15 @@ public class OaCustomFlowController extends BaseController {
         param.put("state",getPara("state"));
         param.put("startTime",getPara("startTime"));
         param.put("endTime",getPara("endTime"));
+
+        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
+        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
+        for (SysRole role : roles) {
+            if (role.getId().equals("6")) {
+                param.put("orgid", user.getOrgid());
+            }
+        }
+
         param.put("name",java.net.URLDecoder.decode(getPara("name",""),"UTF-8"));
         Page<Record> page = service.getPage(Integer.valueOf(curr),Integer.valueOf(pageSize),param);
         renderPage(page.getList(),"",page.getTotalRow());
