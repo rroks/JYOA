@@ -55,7 +55,11 @@ public class OaCustomFlowController extends BaseController {
      */
     public void getSelectListPage(){
         Map<String,String> map = new HashMap<>();
-        map.put("orgid",ShiroKit.getUserOrgId());
+//        map.put("orgid",ShiroKit.getUserOrgId());
+        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
+        if (!isSuperAdministrator(user)) {
+            map.put("orgid", user.getOrgid());
+        }
         List<OaCustomFlowmodel> list = service.getlistbyparam(map);
         String id = getPara("businessid").toString();
         setAttr("businessid", id);
@@ -92,17 +96,37 @@ public class OaCustomFlowController extends BaseController {
         param.put("endTime",getPara("endTime"));
 
         SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
-        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
-        for (SysRole role : roles) {
-            if (role.getId().equals("6")) {
-                param.put("orgid", user.getOrgid());
-            }
+        if (!isSuperAdministrator(user)) {
+            param.put("orgid", user.getOrgid());
         }
+
+//        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
+//        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
+//        for (SysRole role : roles) {
+//            if (role.getId().equals("6")) {
+//                param.put("orgid", user.getOrgid());
+//                break;
+//            }
+//        }
 
         param.put("name",java.net.URLDecoder.decode(getPara("name",""),"UTF-8"));
         Page<Record> page = service.getPage(Integer.valueOf(curr),Integer.valueOf(pageSize),param);
         renderPage(page.getList(),"",page.getTotalRow());
     }
+
+    /**
+     * 判断是否是超级管理员
+     */
+    private boolean isSuperAdministrator(SysUser user) {
+        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
+        for (SysRole role : roles) {
+            if (role.getId().equals("6")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /***
      * 保存
      */
@@ -219,19 +243,19 @@ public class OaCustomFlowController extends BaseController {
         if(StrKit.notBlank(o.getType3())){
             o.put("type3name",typeService.getById(o.getType3()).getName());
         }
-        if("detail".equals(view)){
 
+        if("detail".equals(view)){
             String  CreateUserid = o.getCreateUser();
             o.setCreateUser(SysUser.dao.getById(CreateUserid).getName());
             int state = o.getState();
             //流程模板状态（0.停用，1.启用，2.草稿）
-            if(0==state)
-                o.put("statename","停用");
-            else if(0==state)
-                o.put("statename","启用");
-            else
-                o.put("statename","草稿");
-
+            if (0==state) {
+                o.put("statename", "停用");
+            } else if (1==state) {
+                o.put("statename", "启用");
+            } else {
+                o.put("statename", "草稿");
+            }
         }
         setAttr("o", o);
         render("edit.html");
