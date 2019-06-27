@@ -10,6 +10,7 @@ import com.pointlion.sys.mvc.admin.oa.contract.apply.OaContractApplyService;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomFlowService;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowModelnodeService;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowTypeService;
+import com.pointlion.sys.mvc.admin.oa.hrorg.HrOrgService;
 import com.pointlion.sys.mvc.admin.oa.workflow.WorkFlowService;
 import com.pointlion.sys.mvc.admin.sys.login.LoginValidator;
 import com.pointlion.sys.mvc.common.base.BaseController;
@@ -31,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.apache.shiro.subject.Subject;
 
@@ -78,7 +80,7 @@ public class ProcessController extends BaseController {
      * 获取流程模板列表
      */
     public void getAllCustomProcessList() {
-        List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of("orgid", ShiroKit.getUserOrgId()));
+        List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of("orgid", ShiroKit.getUserOrgId(), "userId", ShiroKit.getUserId()));
         renderJson(list);
     }
 
@@ -89,9 +91,8 @@ public class ProcessController extends BaseController {
         String customProcessName = URLDecoder.decode(getPara("customProcessName", ""), "utf-8");
 
         List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of(
-//                "orgid", ShiroKit.getUserOrgId(),
-                "modelname", customProcessName
-//                "selecttype", getPara("customFlowBelongingType")
+                "modelname", customProcessName,
+                "userId", ShiroKit.getUserId()
         ));
         renderJson(list);
     }
@@ -110,6 +111,9 @@ public class ProcessController extends BaseController {
         params.put("startTime", getPara("startTime"));
         params.put("endTime", getPara("endTime"));
         params.put("name", URLDecoder.decode(getPara("customProcessName", ""), "UTF-8"));
+
+        params.put("userId", ShiroKit.getUserId());
+
         Page<Record> page = customProcessService.getPage(Integer.valueOf(currentPage), Integer.valueOf(pageSize), params);
         renderJson(page);
     }

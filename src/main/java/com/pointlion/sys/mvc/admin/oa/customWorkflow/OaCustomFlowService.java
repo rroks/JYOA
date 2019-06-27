@@ -7,14 +7,14 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
-import com.pointlion.sys.mvc.common.model.OaCustomFlowmodel;
-import com.pointlion.sys.mvc.common.model.OaCustomflowModelOrg;
+import com.pointlion.sys.mvc.common.model.*;
 import com.pointlion.sys.mvc.common.utils.DateUtil;
 import com.pointlion.sys.mvc.common.utils.UuidUtil;
 import com.pointlion.sys.plugin.shiro.ShiroKit;
 
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class OaCustomFlowService {
     public static final OaCustomFlowService me = new OaCustomFlowService();
@@ -47,11 +47,32 @@ public class OaCustomFlowService {
         }if(StrKit.notBlank(param.get("endTime"))){
             sql = sql + "  and o.create_time <= '"+param.get("endTime")+" 23:59:59'";
         }
-        if(StrKit.notBlank(param.get("orgid"))){
-            sql+=" and o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='"+param.get("orgid")+"')";
-        }
+
+        sql += " and (o.id in (select distinct map.modelid from oa_customflow_model_org map where map.orgid in (" + getAuthorizedOrg(param.get("userId")) + ")) ";
+        sql += " or o.create_user = '" + param.get("userId") + "') ";
+
+//        if(StrKit.notBlank(param.get("orgid"))){
+//            sql+=" and o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='"+param.get("orgid")+"') ";
+//        }
+//        if (StrKit.notBlank((param.get("userId")))) {
+//            sql += " or o.create_user = '" + param.get("userId") + "' ";
+//        }
+
         sql = sql + "order by o.create_time desc";
         return Db.paginate(pnum, psize, " select o.id,o.name,o.type_1,o.type_2,o.create_time,o.state,o.node_sum,o.execute_sum,o.visible_org,p.name create_user ,type.name type_3", sql);
+    }
+
+    /**
+     * 判断是否是超级管理员
+     */
+    public boolean isSuperAdministrator(String userId) {
+        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(userId);
+        for (SysRole role : roles) {
+            if (role.getId().equals("6")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -119,12 +140,34 @@ public class OaCustomFlowService {
         }
         if(StrKit.notBlank(param.get("selecttype"))){
             if("myself".equals(param.get("selecttype"))){
-                sql+=" and o.create_user = '"+ShiroKit.getUserId()+"'";
+                sql += " and o.create_user = '" + ShiroKit.getUserId() + "'";
             }
         }
-        if(StrKit.notBlank(param.get("orgid"))){
-            sql+=" and o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='"+param.get("orgid")+"')";
-        }
+
+        sql += " and (o.id in (select distinct map.modelid from oa_customflow_model_org map where map.orgid in (" + getAuthorizedOrg(param.get("userId")) + ")) ";
+        sql += " or o.create_user = '" + param.get("userId") + "') ";
+
+//        if(StrKit.notBlank(param.get("orgid"))){
+//            sql+=" and (o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='" + param.get("orgid") + "') ";
+//        }
+//        if (StrKit.notBlank((param.get("userId")))) {
+//            sql += " or o.create_user = '" + param.get("userId") + "') ";
+//        }
+
+//        if (!isSuperAdministrator(ShiroKit.getUserId())) {
+//            sql+=" and o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='" + ShiroKit.getUserOrgId() + "') ";
+//            sql += " or o.create_user = '" + ShiroKit.getUserId() + "' ";
+//        }
+
         return OaCustomFlowmodel.dao.find(sql);
+    }
+
+    private String getAuthorizedOrg(String userId) {
+        List<SysHrOrg> tList = SysHrOrg.dao.getCheckOrgByUserid(userId);
+        StringJoiner sj = new StringJoiner(",");
+        for (SysHrOrg org: tList) {
+            sj.add("'" + org.getOrgid() + "'");
+        }
+        return sj.toString();
     }
 }

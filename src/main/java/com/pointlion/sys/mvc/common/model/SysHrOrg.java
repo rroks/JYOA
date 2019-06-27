@@ -40,6 +40,14 @@ public class SysHrOrg extends BaseSysHrOrg<SysHrOrg> {
 	public List<SysHrOrg> getCheckOrgByUserid(String userid){
 		return SysHrOrg.dao.find("select * from "+tableName+" where userid = '"+userid+"'");
 	}
+
+	/**
+	 * get only ids
+	 * @param userid
+	 */
+	public List<SysHrOrg> getCheckOrgIdByUserid(String userid){
+		return SysHrOrg.dao.find("select id from "+tableName+" where userid = '"+userid+"'");
+	}
 	
 	public void deleteByUserid(String userid){
 		List<SysHrOrg> list = getCheckOrgByUserid(userid);

@@ -55,11 +55,7 @@ public class OaCustomFlowController extends BaseController {
      */
     public void getSelectListPage(){
         Map<String,String> map = new HashMap<>();
-//        map.put("orgid",ShiroKit.getUserOrgId());
-        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
-        if (!isSuperAdministrator(user)) {
-            map.put("orgid", user.getOrgid());
-        }
+        map.put("userId", ShiroKit.getUserId());
         List<OaCustomFlowmodel> list = service.getlistbyparam(map);
         String id = getPara("businessid").toString();
         setAttr("businessid", id);
@@ -74,9 +70,9 @@ public class OaCustomFlowController extends BaseController {
         String modelname = java.net.URLDecoder.decode(getPara("modelname",""),"UTF-8");
         String selecttype = getPara("selecttype");
         Map<String,String> map = new HashMap<>();
-        map.put("orgid",ShiroKit.getUserOrgId());
         map.put("modelname",modelname);
         map.put("selecttype",selecttype);
+        map.put("userId", ShiroKit.getUserId());
         List<OaCustomFlowmodel> list = service.getlistbyparam(map);
         renderJson(list);
     }
@@ -94,21 +90,7 @@ public class OaCustomFlowController extends BaseController {
         param.put("state",getPara("state"));
         param.put("startTime",getPara("startTime"));
         param.put("endTime",getPara("endTime"));
-
-        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
-        if (!isSuperAdministrator(user)) {
-            param.put("orgid", user.getOrgid());
-        }
-
-//        SysUser user = SysUser.dao.findById(ShiroKit.getUserId());
-//        List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
-//        for (SysRole role : roles) {
-//            if (role.getId().equals("6")) {
-//                param.put("orgid", user.getOrgid());
-//                break;
-//            }
-//        }
-
+        param.put("userId", ShiroKit.getUserId());
         param.put("name",java.net.URLDecoder.decode(getPara("name",""),"UTF-8"));
         Page<Record> page = service.getPage(Integer.valueOf(curr),Integer.valueOf(pageSize),param);
         renderPage(page.getList(),"",page.getTotalRow());
@@ -116,6 +98,7 @@ public class OaCustomFlowController extends BaseController {
 
     /**
      * 判断是否是超级管理员
+     * @deprecated
      */
     private boolean isSuperAdministrator(SysUser user) {
         List<SysRole> roles = SysRole.dao.getAllRoleByUserid(user.getId());
