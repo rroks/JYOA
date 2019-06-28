@@ -149,7 +149,7 @@ public class OAConstants {
 	public static final String OA_CUSTOM_CASENODE_STATE_AGREE = "2";//同意
 	public static final String OA_CUSTOM_CASENODE_STATE_DISAGREE = "3";//不同意
 	public static final String OA_CUSTOM_CASENODE_STATE_BACK = "4";//退回
-    public static final String OA_CUSTOM_CASENODE_STATE_RECALL = "5";//退回
+    public static final String OA_CUSTOM_CASENODE_STATE_RECALL = "5";//撤回
 
 	public static final String OA_CUSTOM_JOIN_STATE_LAUNCH = "1";//已发起
 	public static final String OA_CUSTOM_JOIN_STATE_RESPONSE = "2";//已反馈

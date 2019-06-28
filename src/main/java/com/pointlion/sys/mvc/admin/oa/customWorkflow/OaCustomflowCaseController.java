@@ -81,6 +81,7 @@ public class OaCustomflowCaseController extends BaseController{
         setAttr("buinessid", buinessid); //模板节点数据
         render("back.html");
     }
+
     /***
      * 退回操作
      */
@@ -132,6 +133,8 @@ public class OaCustomflowCaseController extends BaseController{
                 }
             }
             else if("2".equals(approvaltype)){//退回多人审批节点
+                Case.setCurrentmodelnodeid(modelnodeid);
+                Case.update();
                 String userlist = getPara("userlist");
                 List<String> parseArray = JSONObject.parseArray(userlist,String.class);
                 for (String userid:parseArray) {
@@ -148,6 +151,8 @@ public class OaCustomflowCaseController extends BaseController{
                 }
             }
             else if("3".equals(approvaltype)){//退回自定义审批节点
+                Case.setCurrentmodelnodeid(modelnodeid);
+                Case.update();
                 String customuserid = getPara("customuserid");
                 String useridarr[]  = customuserid.split(",");
                 for(String userid:useridarr){
@@ -184,11 +189,10 @@ public class OaCustomflowCaseController extends BaseController{
         }
         OaCustomflowCase Case = service.getById(casenode.getCaseid());
         OaCustomflowModelnode modelnode =  modelNodeService.getById(Case.getCurrentmodelnodeid());
-        if(caseNodeService.getBotherNodeById(casenode.getId(),casenode.getCaseid()).size()<1){
-            if(StrKit.notBlank(modelnode.getNextmodelnodeid())){
-                OaCustomflowModelnode nextModelnode = modelNodeService.getShowmodelnodeById(modelnode.getNextmodelnodeid());
-                setAttr("o",nextModelnode);
-            }
+        String nextModelNodeId = modelnode.getNextmodelnodeid();
+        if(caseNodeService.getSameLevelNodeById(casenode.getId(),casenode.getCaseid()).size() == 0 && StrKit.notBlank(nextModelNodeId)){
+            OaCustomflowModelnode nextModelnode = modelNodeService.getShowmodelnodeById(nextModelNodeId);
+            setAttr("o",nextModelnode);
         }
         setAttr("caseid",Case.getId());
         setAttr("casenodeid",casenodeid);
@@ -215,7 +219,7 @@ public class OaCustomflowCaseController extends BaseController{
                 //更新审批信息
                 if(StrKit.notBlank(o.getId())){
                     o.update();
-                }else{
+                } else {
                     o.setId(UuidUtil.getUUID());
                     o.setApprovalOpinion("[同意]");
                     o.setCasenodeid(casenode.getId());

@@ -97,6 +97,13 @@ public class OaCustomflowCasenodeService {
         String sql  = "select * from "+TABLE_NAME+" o   where  o.id<>'"+CaseNodeid+"' and  o.is_commit_casenode =0 and o.status=1 and o.modelnodeid='"+caseNode.getModelnodeid() +"' and o.caseid='"+Caseid +"' order by o.createtime desc";
         return OaCustomflowCasenode.dao.find(sql);
     }
+
+    public List<OaCustomflowCasenode> getSameLevelNodeById(String CaseNodeid,String Caseid){
+        OaCustomflowCasenode caseNode = getById(CaseNodeid);
+        String sql  = "select * from "+TABLE_NAME+" o   where  o.id <> '"+CaseNodeid+"' and  o.is_commit_casenode = 0 and (o.status = 1 or o.status = 4) and o.modelnodeid = '"+caseNode.getModelnodeid() +"' and o.caseid = '"+Caseid +"' order by o.createtime desc";
+        return OaCustomflowCasenode.dao.find(sql);
+    }
+
     /***
      * //更新模板节点下所有案例节点状态
      */
