@@ -17,6 +17,8 @@ import com.pointlion.sys.mvc.admin.oa.common.FlowCCService;
 import com.pointlion.sys.mvc.admin.oa.common.OAConstants;
 import com.pointlion.sys.mvc.admin.oa.contract.OaContractService;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowCaseService;
+import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowCasenodeService;
+import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowModelnodeService;
 import com.pointlion.sys.mvc.admin.oa.workflow.WorkFlowService;
 import com.pointlion.sys.mvc.common.base.BaseController;
 import com.pointlion.sys.mvc.common.model.*;
@@ -187,6 +189,8 @@ public class OaContractApplyController extends BaseController {
         	String defkey = service.getDefKeyByType(type);
         	String insId = wfservice.startProcess(id, defkey,o.getTitle(),null);
         	o.setProcInsId(insId);
+        	o.setIfCustomflow(Constants.IF_CUSTOMFLOW_NO);
+//        	o.setIfCustomflow();
         	o.update();
         	renderSuccess("提交成功");
     	//}
@@ -227,7 +231,7 @@ public class OaContractApplyController extends BaseController {
     	String id = getPara("id");
     	try{
     		OaContractApply o = OaContractApply.dao.getById(id);
-        	wfservice.callBack(o.getProcInsId());
+    		wfservice.callBack(o.getProcInsId());
         	o.setIfSubmit(Constants.IF_SUBMIT_NO);
         	o.setProcInsId("");
         	o.update();
@@ -245,12 +249,25 @@ public class OaContractApplyController extends BaseController {
 		String id = getPara("id");
 		try{
 			OaContractApply o = OaContractApply.dao.getById(id);
+			OaCustomflowCase processInstance = ocfcService.getById(o.getProcInsId());
+			OaCustomflowModelnode modelnode =  OaCustomflowModelnodeService.me.getById(processInstance.getCurrentmodelnodeid());
+			if (modelnode.getSequence() == 1) {
+				List<OaCustomflowCasenode> nodes = OaCustomflowCasenodeService.me.getSameLevelNodeByInstanceIdAndModelId(processInstance.getId(), processInstance.getCurrentmodelnodeid());
+				for (OaCustomflowCasenode node : nodes) {
+					if (node.getStatus() != 1 && node.getStatus() != 4) {
+						throw new Exception();
+					}
+				}
+			} else {
+				throw new Exception();
+			}
+
 			ocfcService.callBack(o.getProcInsId());
 			o.setIfSubmit(Constants.IF_SUBMIT_NO);
 			o.setProcInsId("");
 			o.update();
 			renderSuccess("撤回成功");
-		}catch(Exception e){
+		} catch (Exception e){
 			e.printStackTrace();
 			renderError("撤回失败");
 		}

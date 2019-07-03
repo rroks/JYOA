@@ -70,13 +70,21 @@ public class OaCustomflowCaseController extends BaseController{
         SysUser user = SysUser.dao.getById(Case.getCreateuser());
         setAttr("commituser", user.getName()); //模板节点数据
         List<Record> nodes = modelNodeService.getBymodelId(Case.getModelid());
+
+        List<Record> validNodes = new ArrayList<>();
+        for (Record record : nodes) {
+            if ((int) record.get("sequence") < modelNodeService.getById(casenode.getModelnodeid()).getSequence()) {
+                validNodes.add(record);
+            }
+        }
+
         if(StrKit.notBlank(o.getHandleOpinion()))
             o.setHandleOpinion(URLDecoder.decode(o.getHandleOpinion(),"UTF-8"));
         String handle_opinion = getPara("oaCustomflowComment.handle_opinion");
         String sign_address = getPara("oaCustomflowComment.sign_address");
         setAttr("handle_opinion", handle_opinion); //模板节点数据
         setAttr("sign_address", sign_address); //模板节点数据
-        setAttr("nodesdata", JSON.toJSONString(nodes)); //模板节点数据
+        setAttr("nodesdata", JSON.toJSONString(validNodes)); //模板节点数据
         setAttr("casenodeid", casenodeid); //模板节点数据
         setAttr("buinessid", buinessid); //模板节点数据
         render("back.html");
@@ -95,7 +103,7 @@ public class OaCustomflowCaseController extends BaseController{
         String sign_address = getPara("sign_address");
         OaCustomflowCasenode casenode = caseNodeService.getById(casenodeid);
         OaCustomflowCase Case = service.getById(casenode.getCaseid());
-        if(1!=casenode.getStatus()){
+        if (1 != casenode.getStatus()){
             renderError("已审批不可重复审批！");
             return;
         }

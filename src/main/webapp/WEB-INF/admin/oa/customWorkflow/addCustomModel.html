@@ -119,7 +119,9 @@
                     state=1;
                 }else{
                     state=2;
-                }/*
+                }
+                // return;
+                /*
                 //获取所有节点的数据
                 var arr = [];
                 $(".node").each(function(){
@@ -223,6 +225,20 @@
                     validators: {
                         notEmpty: {
                             message: '节点名称不能为空'
+                        },
+                        callback: function (value, validator) {
+                            console.log("oaCustomflowModelnodeList name" + value);
+                        }
+                    }
+                });
+
+                $('#editForm').bootstrapValidator('addField','oaCustomflowModelnodeList['+nodenum +'].approvaluserid', {
+                    validators: {
+                        notEmpty: {
+                            message: '请选择节点审批人员'
+                        },
+                        callback: function (value, validator) {
+                            console.log("oaCustomflowModelnodeList id" + value);
                         }
                     }
                 });
@@ -300,12 +316,12 @@
             }
             function openSlectFlowCCDialog(element){
                 var type = $(element).parent().prev().find('select').val();
-                if(type==1){
+                if (type==1) {
                     var flowcc =  $(element).siblings('input');
                     pointLion.selectOneUser(encodeURIComponent("#root"),function(data){
                         flowcc.val(data.idData);
                     });
-                }else{
+                } else {
                     var flowcc =  $(element).siblings('input');
                     pointLion.selectManyUser4CC("orgid="+encodeURIComponent("#root")+"&flowCCId="+encodeURIComponent($(flowcc).val()),function(data){
                         //if(data.idData != null && data.idData !=""){
@@ -374,6 +390,9 @@
                             validators: {
                                 notEmpty: {
                                     message: '*请选择可见部门'
+                                },
+                                callback: function (value, validator) {
+                                    console.log(value);
                                 }
 
                             }
@@ -382,6 +401,19 @@
                             validators: {
                                 notEmpty: {
                                     message: '节点名称不能为空'
+                                },
+                                callback: function (value, validator) {
+                                    console.log("oaCustomflowModelnodeList name " + value);
+                                }
+                            }
+                        },
+                        'oaCustomflowModelnodeList[1].approvaluserid': {
+                            validators: {
+                                notEmpty: {
+                                    message: '请选择节点审批人员'
+                                },
+                                callback: function (value, validator) {
+                                    console.log("oaCustomflowModelnodeList id" + value);
                                 }
                             }
                         }

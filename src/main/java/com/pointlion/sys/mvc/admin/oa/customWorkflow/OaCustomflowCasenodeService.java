@@ -104,6 +104,11 @@ public class OaCustomflowCasenodeService {
         return OaCustomflowCasenode.dao.find(sql);
     }
 
+    public List<OaCustomflowCasenode> getSameLevelNodeByInstanceIdAndModelId(String instanceId, String modelNodeId) {
+        String sql = String.format("select * from oa_customflow_casenode where caseid = '%s' and modelnodeid = '%s';", instanceId, modelNodeId);
+        return OaCustomflowCasenode.dao.find(sql);
+    }
+
     /***
      * //更新模板节点下所有案例节点状态
      */
