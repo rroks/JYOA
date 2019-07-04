@@ -1,0 +1,350 @@
+#include("/common/include/include.html")
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <div class="modal-dialog" style="width:100%">
+                <div class="modal-content" style="height: 100%;">
+                    <div class="modal-header lay-header">
+                        <button type="button" class="close" data-dismiss="modal" onclick="{parent.layer.closeAll();}"><i class="pci-cross pci-circle"></i></button>
+                        <h4 class="modal-title text-center">自定义流程管理</h4>
+                    </div>
+                    <div class="modal-body lay-body page-content">
+                        <div >
+                            <div class=" col-sm-5">
+                                <label class="col-sm-3 control-label text-center" style="margin-top: 4px">流程名称:</label>
+                                <div class="col-sm-8" id="serachmodelname">
+                                    <input id="modelname" type="text"  class="col-sm-12 "   value="#(o?o.name:'')">
+                                </div>
+                            </div>
+                            <div class="row  col-sm-6" style="margin-left: 5px" id="modelstate">
+                                <div class="radio-inline col-sm-9" style="margin-top: 4px">
+                                    <!-- <label class="radio-inline"> <input type="radio" name="optionsRadios" value="recently" checked> 最近使用</label>-->
+                                    <label class="radio-inline"><input type="radio"  onchange="rediochange(this)" name="optionsRadios" value="myself"> 我的流程</label>
+                                    <label class="radio-inline"><input type="radio"  onchange="rediochange(this)" name="optionsRadios" value="all" checked> 全部流程</label>
+                                </div>
+                                <a id="search" class="col-sm-2  btn btn-mint " style="float: left"  onclick="searchmodel()" href="javascript:void(0);"><i class="demo-pli-add"></i> 搜索</a>
+                            </div>
+                        </div>
+                        <div class="lay-body">
+                            <div class="col-sm-4">
+                                <h5 class="modal-title text-center">流程模板</h5>
+                                <div class="panel pre-scrollable lion-fullHeight">
+                                    <div class="panel-body">
+                                        <ul id="modelList" class="nav nav-tabs nav-stacked">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 ">
+                                <h5 class="modal-title text-center">流程节点</h5>
+                                <div class="panel pre-scrollable lion-fullHeight">
+                                    <div class="panel-body">
+                                        <input type="hidden"  name="oaCustomFlowmodel.id"  value="#(o?o.id:'')">
+                                        <div class=" row">
+                                            <div class="col-md-4">
+                                                <label class=" control-label col-md-5">流程状态:</label>
+                                                <div class="input-group col-md-7">
+                                                    <input id="state" type="text" class="col-md-12" name="oaCustomFlowmodel.state" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class=" control-label col-md-5">一类类型:</label>
+                                                <div class="input-group col-md-7">
+                                                    <select id="type1" class="col-md-12" name="oaCustomFlowmodel.type1"  disabled="disabled" >
+                                                        <option value="none">请选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class=" control-label col-md-5">二类类型:</label>
+                                                <div class="input-group col-md-7">
+                                                    <select id="type2" class="col-md-12" name="oaCustomFlowmodel.type2"  disabled="disabled" >
+                                                        <option value="none">请选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class=" row">
+                                            <div class="col-md-4">
+                                                <label class="col-md-5 control-label">三类类型:</label>
+                                                <div class="col-md-7">
+                                                    <select id="type3" class="col-md-12" name="oaCustomFlowmodel.type3"  disabled="disabled" >
+                                                        <option value="none">请选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="col-md-5 control-label">创建人:</label>
+                                                <div class="col-md-7">
+                                                    <input id="createUser" type="text" class="col-md-12" name="oaCustomFlowmodel.createUser" readonly >
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="col-md-5 control-label">创建时间:</label>
+                                                <div class="col-md-7">
+                                                    <input id="createTime" type="text" class="col-md-12" name="oaCustomFlowmodel.createTime"  readonly>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <br><br><br>
+                                            <div  class="panel-body form-horizontal form-padding">
+                                                <div class="row">
+                                                    <div  style="width: 10%;margin: auto auto;">
+                                                        <div class="rect"  >
+                                                            <p>开始</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="nodes">
+                                                </div>
+                                                <div >
+                                                    <div class="arrow-body"></div>
+                                                    <div class="arrow-footer"></div>
+                                                </div>
+                                                <div  style="width: 10%;margin: auto auto;">
+                                                    <div class="rect"  >
+                                                        <p>结束</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-8 col-md-offset-2">
+                                <input   id="SelectFileid" class="form-control">
+                                <button class="btn btn-primary btn-lg col-md-offset-2" type="button" onclick="startmyprocess()">提交</button>
+                                <button class="btn btn-default btn-lg col-md-offset-2" type="button" onclick="cancel()">取消</button>
+                                <button id="cltBtn" class="btn btn-default btn-lg col-md-offset-2" type="button" onclick="openSelect(this)">选择归档人</button>
+                                <input id="isfile" type="checkbox">不归档
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //查询
+    var selectmodelid ='';
+    var isneedselectnode =false;//判断是否是需要首节点选择节点审批人
+    function startmyprocess(){
+        var approvaluserid = $('#approvaluserid').val();
+        var SelectFileid = $('#SelectFileid').val();
+        if($('#isfile').checked){
+            console.log("不归档");
+            SelectFileid='';
+        }
+        console.log(approvaluserid);
+        if(isneedselectnode&&(approvaluserid==null||approvaluserid=='')){
+            pointLion.alertMsg("首节点为自定义审批,请在首节点处选择审批人！");
+            return;
+        }
+        pointLion.confimMsg("您将要提交该单据！并且启动自定义审批流程<br/><span style='color:green;'>您将无法进行修改和删除！！！</span> <br/>点击确认进行提交 , 点击取消取消该操作",null,function(){
+            var data =parent.commitProcess('#(businessid)',selectmodelid,approvaluserid,SelectFileid);
+            /*var data = common_ajax.ajaxFunc("/admin/oa/contract/apply/startMyProcess?type=#(type)",{"id":'#(businessid)',"modelid":selectmodelid}, "json", null);*/
+            if(data.success){
+                pointLion.alertMsg(data.message,"success",null,function(){
+                    doPjax(ctx+'/admin/oa/contract/apply/getListPage?type=1');//跳转到列表页
+                });
+                parent.$("#pageTable").bootstrapTable('refresh');
+            }else{
+                pointLion.alertMsg(data.message,"danger",null,null);
+            }
+        });
+
+    }
+    function initTable(data){
+        $("#modelList").find("li").remove();
+        $.each(JSON.parse(data),function(n,value) {
+            var li = $("<li class=\"eachmodel\"></li>");
+            li.append("<a href=\"javascript:void(0)\" style=\"color: black;text-decoration:none;margin-left: 4px;text-align: center;\" onclick=\"selectmodel('"+ value.id +"')\">" + value.name + "</a>");
+            $("#modelList").append(li);
+        });
+    }
+    function searchmodel(){
+        var modelname = $("#modelname").val();
+        var selecttype =$("input[name='optionsRadios']:checked").val();
+        $.ajax({
+            type:'POST',
+            url:ctx+"/admin/oa/CustomFlow/getSelectByAjax",
+            data:{
+                modelname:encodeURIComponent(modelname),
+                selecttype:selecttype
+            },
+            cache:false,
+            dataType:'json',
+            success:function(Datas){
+                console.log(Datas);
+                $("#modelList").find("li").remove();
+                $.each(Datas,function(n,value) {
+                    var li = $("<li class=\"eachmodel\"></li>");
+                    li.append("<a href=\"javascript:void(0)\" style=\"color: black;text-decoration:none;margin-left: 4px;text-align: center;\" onclick=\"selectmodel('"+ value.id +"')\">" + value.name + "</a>");
+                    $("#modelList").append(li);
+                });
+            },
+            error:function(Datas){
+                alert("请求失败");
+            }
+        });
+
+    }
+    function selectmodel(data){
+        selectmodelid=data;
+        console.log(data);
+        $.ajax({
+            type:'get',
+            url:ctx+"/admin/oa/CustomFlow/getModelByAjax",
+            data:{
+                modelId:data
+            },
+            cache:false,
+            dataType:'json',
+            success:function(Datas){
+                console.log(Datas);
+                $("#state").val(Datas.o.statename);
+                $("#createUser").val(Datas.o.create_user);
+                $("#createTime").val(Datas.o.create_time);
+                $("#type1").find("option:not(:first)").remove();
+                var option1 = '<option value="'+Datas.o.type_1+'" selected="selected">'+Datas.o.type1name+'</option>'
+                $("#type1").append(option1);
+                $("#type2").find("option:not(:first)").remove();
+                var option2 = '<option value="'+Datas.o.type_2+'" selected="selected">'+Datas.o.type2name+'</option>'
+                $("#type2").append(option2);
+                $("#type3").find("option:not(:first)").remove();
+                var option3 = '<option value="'+Datas.o.type_3+'" selected="selected">'+Datas.o.type3name+'</option>'
+                $("#type3").append(option3);
+
+                $("#nodes").find("div").remove();
+                $.each(JSON.parse(Datas.nodesdata),function(n,value) {
+                    //console.log(value);
+                    console.log(n+"--"+value.columns.approvaltype);
+                    let divnode = document.createElement("div");
+
+                    let divarrow = document.createElement("div");
+                    divarrow.classList.add("form-group");
+                    divarrow.innerHTML += '<div class="arrow-body"></div>\n' +
+                        '<div class="arrow-footer"></div>\n';
+
+
+                    let div = document.createElement("div");
+                    div.classList.add("rect");
+                    div.classList.add("node");
+                    //div.setAttribute("node-number","")
+                    div.innerHTML += '<input type="hidden"  name="nodeid" class="form-control">\n' +
+                        '<div class="form-group">\n' +
+                        '            <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>节点名称:</label>\n' +
+                        '            <div class="col-md-6">\n' +
+                        '            <input type="text"   class="form-control"  value="' + value.columns.name + '"  readonly>\n' +
+                        '            </div>\n' +
+                        '            </div>\n' +
+                        '<div class="form-group">\n' +
+                        '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批类型:</label>\n' +
+                        '<div class="col-md-6">\n' +
+                        '<input type="text"   class="form-control"  value="' + value.columns.approvaltype + '" readonly>\n' +
+                        '</div>\n' +
+                        '</div>\n' ;
+                    if(n==0&&value.columns.approvaltype== "自定义审批"){
+                        isneedselectnode=true;
+                        div.innerHTML +='<div class="form-group">\n' +
+                            '<input type="hidden" id="approvaluserid" name="approvaluserid" class="form-control"  value="#(flowCC)">\n' +
+                            '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>\n' +
+                            '<button id="ctlBtn" type="button" onclick="openSlectFlowCCDialog(this)"   class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>\n' +
+                            '</div>\n';
+                    }
+                    if (value.columns.approvaltype != "自定义审批") {
+                        div.innerHTML += '<div class="form-group">\n'+
+                            '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>\n' +
+                            '<div class="col-md-6">\n' +
+                            '<input type="text"   class="form-control"  value="' + value.columns.approvalname + '" readonly>\n' +
+                            '</div>\n' +
+                            '</div>\n';
+                    }
+                    div.innerHTML += '</div>\n';
+                    divnode.appendChild(divarrow);
+                    divnode.appendChild(div);
+                    document.getElementById('nodes').appendChild(divnode);
+                });
+            },
+            error:function(Datas){
+                alert("请求失败");
+            }
+        });
+
+    }
+    function cancel(){
+        parent.layer.closeAll();
+    }
+    $(document).ready(function(){
+        console.log("reach");
+        $("#leftPanel").css("height",document.body.clientHeight-132);
+        initFullHeight();//初始化高度
+        var data = '#(data)';
+        initTable(data);
+    });
+    function openSlectFlowCCDialog(element){
+        var flowcc =  $(element).siblings('input');
+        var index = pointLion.selectManyUser4CC("orgid="+encodeURIComponent("#root")+"&flowCCId="+encodeURIComponent($(flowcc).val()),function(data){
+            flowcc.val(data.idData);
+        });
+    }
+    function openSelect(element){
+        var SelectFileid =  $("#SelectFileid");
+        var index = pointLion.selectOneUser(encodeURIComponent("#root"),function(data){
+            SelectFileid.val(data.idData);
+        });
+        console.log(SelectFileid.val());
+    }
+
+</script>
+<style>
+    div.rect {
+        border-radius: 20px;
+        border:2px solid;
+        text-align: center;
+        padding: 10px 0 0 0;
+        margin: 5px 5px;
+    }
+
+    div.rect:hover {
+        cursor: pointer;
+    }
+    div.arrow-body {
+        width: 20px;
+        height: 50px;
+        background: #ccc;
+        margin: 10px auto 0;
+    }
+
+    div.arrow-footer {
+        width: 0;
+        height: 0;
+        border-width: 30px 30px 0;
+        border-style: solid;
+        border-color: #ccc transparent transparent; /*灰 透明 透明 */
+        margin: 0 auto;
+    }
+    #nodes {
+        width: 40%;
+        margin: auto auto;
+    }
+    .lay-body{
+        margin-top: 52px;
+        overflow-y: auto;
+        overflow-x: unset;
+    }
+    .lay-header{
+        position: absolute;
+        top: 0px;
+        width: 100%;
+    }
+</style>

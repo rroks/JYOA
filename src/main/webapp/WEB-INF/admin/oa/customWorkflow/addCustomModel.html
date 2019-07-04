@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <input  id="firstOrgId" name="oaCustomFlowmodel.visible_org">
+                        <input type="hidden" id="firstOrgId" name="oaCustomFlowmodel.visible_org">
                         <label class="col-md-1 control-label col-md-offset-1"><small  style="color: #FF0000">*</small>可见部门(<small  style="color: #FF0000">不可全选</small>):</label>
                         <div>
                             <button id="department" onclick="selectManyOrg()" type="button"  class="btn-primary btn-sm" style="float: left;">选择</button>
@@ -76,7 +76,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <input  name="oaCustomflowModelnodeList[1].approvaluserid" class="form-control"  value="#(flowCC)">
+                                <input type="hidden" name="oaCustomflowModelnodeList[1].approvaluserid" class="form-control"  value="#(flowCC)">
                                 <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>
                                 <button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>
                             </div>

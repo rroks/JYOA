@@ -172,7 +172,8 @@
 	           	}else{
 	 	    	   if(value=='0'){//未提交
 	 		           	a = a + '<a class="label label-table label-info" onclick="startProcess(\''+row.id+'\')" href="javascript:void(0);" >提交</a>&nbsp;';
-					    a = a + '<a class="label label-table label-warning" onclick="startMyProcess(\''+row.id+'\',\''+row.proc_ins_id+'\')" href="javascript:void(0);" >自定义审批</a>&nbsp;';
+					    a = a + '<a class="label label-table label-warning" onclick="startMyProcess(\''+row.id+'\',\''+row.proc_ins_id+'\')" href="javascript:void(0);" target="_blank">自定义审批</a>&nbsp;';
+					   	// a = a + '<a class="label label-table label-warning" onclick="doPjax(\'' + ctx + '/admin/oa/CustomFlow/getSelectListPage?type=#(type)&businessid=' + row.id + '\')" href="javascript:void(0);" target="_blank">自定义审批</a>&nbsp;';
 	 		           	a = a + '<a class="label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/contract/apply/getEditPage?id='+row.id+'&view=detail&type=#(type)\')" href="javascript:void(0);" >查看</a>&nbsp;';
 	 		           	a = a + '<a class="label label-table label-success" onclick="doPjax(\''+ctx+'/admin/oa/contract/apply/getEditPage?id='+row.id+'&view=edit&type=#(type)\')" href="javascript:void(0);" >编辑</a>&nbsp;';
 	 		           	a = a + '<a class="label label-table label-danger" onclick="del(\''+row.id+'\')" href="javascript:void(0);" >删除</a>';
@@ -311,6 +312,7 @@
 	}
 	//提交，启动自定义流程
 	function startMyProcess(taskid,caseid,){
+		console.log("reach function");
 		if(caseid&&caseid!='null'){
 			pointLion.confimMsg("您将要提交该单据！并且启动自定义审批流程<br/><span style='color:green;'>您将无法进行修改和删除！！！</span> <br/>点击确认进行提交 , 点击取消取消该操作",null,function(){
 				var data = common_ajax.ajaxFunc("/admin/oa/contract/apply/startMyProcess?",{"id":taskid,"caseid":caseid}, "json", null);
@@ -324,20 +326,23 @@
 				}
 			});
 		}else{
-			layer.open({
-				type: 2,
-				title: false, //不显示标题栏
-				area: ['70%', '60%'],
-				shade: 0.8,
-				id: 'selectOneMenu', //设定一个id，防止重复弹出
-				resize: false,
-				closeBtn: false,
-				isOutAnim : false ,
-				btnAlign: 'c',
-				content: ctx+'/admin/oa/CustomFlow/getSelectListPage?type=#(type)&businessid='+taskid,
-				success: function(layero){
-				}
-			});
+			console.log(taskid);
+			doPjax(ctx + '/admin/oa/CustomFlow/getSubmitCustomProcess?type=#(type)&businessid=' + taskid);
+			console.log("ddd");
+			// layer.open({
+			// 	type: 2,
+			// 	title: false, //不显示标题栏
+			// 	area: ['70%', '60%'],
+			// 	shade: 0.8,
+			// 	id: 'selectOneMenu', //设定一个id，防止重复弹出
+			// 	resize: false,
+			// 	closeBtn: false,
+			// 	isOutAnim : false ,
+			// 	btnAlign: 'c',
+			// 	content: ctx+'/admin/oa/CustomFlow/getSelectListPage?type=#(type)&businessid='+taskid,
+			// 	success: function(layero){
+			// 	}
+			// });
 		}
 	}
 	//提交，启动自定义流程

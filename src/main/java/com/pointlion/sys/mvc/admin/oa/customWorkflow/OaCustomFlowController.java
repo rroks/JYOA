@@ -57,12 +57,29 @@ public class OaCustomFlowController extends BaseController {
         Map<String,String> map = new HashMap<>();
         map.put("userId", ShiroKit.getUserId());
         List<OaCustomFlowmodel> list = service.getlistbyparam(map);
-        String id = getPara("businessid").toString();
+        String id = getPara("businessid");
         setAttr("businessid", id);
-        setAttr("type", getPara("type"));
-        setAttr("data",JSON.toJSONString(list));
+        String type = getPara("type");
+        setAttr("type", type);
+//        setAttr("data",JSON.toJSONString(list));
+        setAttr("data", JSONArray.toJSONString(list));
         render("select.html");
     }
+
+    public void getSubmitCustomProcess(){
+        Map<String,String> map = new HashMap<>();
+        map.put("userId", ShiroKit.getUserId());
+        List<OaCustomFlowmodel> list = service.getlistbyparam(map);
+        String id = getPara("businessid");
+        setAttr("businessid", id);
+        String type = getPara("type");
+        setAttr("type", type);
+//        setAttr("data",JSON.toJSONString(list));
+        setAttr("data", JSONArray.toJSONString(list));
+        render("submitCustomProcess.html");
+    }
+
+
     /***
      * 选择模板页面ajax更新模板信息
      */
