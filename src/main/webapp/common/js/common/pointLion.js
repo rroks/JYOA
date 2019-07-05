@@ -370,7 +370,7 @@ var pointLion = function(){
 				  closeBtn: false,
 				  isOutAnim : false , 
 				  btnAlign: 'c',
-				  content: ctx+'/admin/oa/assessment/getWorkFlowHis?insid='+insid,
+				  content: ctx+'/admin/oa/workflow/getWorkFlowHis?insid='+insid,
 				  success: function(layero){
 					  
 				  }

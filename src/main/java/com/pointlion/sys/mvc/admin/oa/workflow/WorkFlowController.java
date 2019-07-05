@@ -124,7 +124,7 @@ public class WorkFlowController extends BaseController{
 	public void getWorkFlowHis(){
 		String insid = getPara("insid");
 		setAttr("hislist",me.getHisTaskList(insid));
-		render("/WEB-INF/admin/oa/assessment/taskHisList.html");
+		render("/WEB-INF/admin/oa/workflow/taskHisList.html");
 	}
 	
 	/***

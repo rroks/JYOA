@@ -302,20 +302,21 @@
 				}
 			});
 		}else{
-			layer.open({
-				type: 2,
-				title: false, //不显示标题栏
-				area: ['70%', '60%'],
-				shade: 0.8,
-				id: 'selectOneMenu', //设定一个id，防止重复弹出
-				resize: false,
-				closeBtn: false,
-				isOutAnim : false ,
-				btnAlign: 'c',
-				content: ctx+'/admin/oa/CustomFlow/getSelectListPage?type=#(type)&businessid='+taskid,
-				success: function(layero){
-				}
-			});
+			doPjax(ctx + '/admin/oa/CustomFlow/getSubmitCustomProcess?type=#(type)&businessid=' + taskid);
+			// layer.open({
+			// 	type: 2,
+			// 	title: false, //不显示标题栏
+			// 	area: ['70%', '60%'],
+			// 	shade: 0.8,
+			// 	id: 'selectOneMenu', //设定一个id，防止重复弹出
+			// 	resize: false,
+			// 	closeBtn: false,
+			// 	isOutAnim : false ,
+			// 	btnAlign: 'c',
+			// 	content: ctx+'/admin/oa/CustomFlow/getSelectListPage?type=#(type)&businessid='+taskid,
+			// 	success: function(layero){
+			// 	}
+			// });
 		}
 	}
 	//提交，启动自定义流程

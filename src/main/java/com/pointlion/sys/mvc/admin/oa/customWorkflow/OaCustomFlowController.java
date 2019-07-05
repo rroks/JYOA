@@ -197,6 +197,7 @@ public class OaCustomFlowController extends BaseController {
 
     /**
      * 停启用自定义审批流程
+     * 未检查是否在使用中
      * @author Fen
      */
     public void enableCustomProcess() {

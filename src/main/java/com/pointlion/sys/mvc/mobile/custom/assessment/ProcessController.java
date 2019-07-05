@@ -182,17 +182,6 @@ public class ProcessController extends BaseController {
     }
 
     /**
-     * 提交自定义审批流程
-     * TODO
-     */
-    @Before(Tx.class)
-    public void startAssessmentWithCustomflow() {
-        String transactionId = getPara("transactionId");
-        String customProcessId = getPara("customProcessId");
-        String assessorId = getPara("assessorId");
-    }
-
-    /**
      * 获取类别维护列表
      */
     public void getType() {
@@ -281,14 +270,6 @@ public class ProcessController extends BaseController {
         }
         proceeType.update();
         renderSuccess();
-    }
-
-    /**
-     * 提交合同审批
-     * OaCustomFlowController.startProcess
-     */
-    public void submitAssessmentProcess() {
-        String id = getPara("id");
     }
 
     /**

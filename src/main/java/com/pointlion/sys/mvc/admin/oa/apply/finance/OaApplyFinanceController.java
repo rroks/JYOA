@@ -18,14 +18,10 @@ import com.pointlion.sys.mvc.admin.oa.common.FlowCCService;
 import com.pointlion.sys.mvc.admin.oa.common.OAConstants;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowCaseService;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowCasenodeService;
+import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowModelnodeService;
 import com.pointlion.sys.mvc.admin.oa.workflow.WorkFlowService;
 import com.pointlion.sys.mvc.common.base.BaseController;
-import com.pointlion.sys.mvc.common.model.OaApplyFinance;
-import com.pointlion.sys.mvc.common.model.OaContract;
-import com.pointlion.sys.mvc.common.model.OaPermissionGroup;
-import com.pointlion.sys.mvc.common.model.OaProject;
-import com.pointlion.sys.mvc.common.model.SysOrg;
-import com.pointlion.sys.mvc.common.model.SysUser;
+import com.pointlion.sys.mvc.common.model.*;
 import com.pointlion.sys.mvc.common.utils.Constants;
 import com.pointlion.sys.mvc.common.utils.DateUtil;
 import com.pointlion.sys.mvc.common.utils.StringUtil;
@@ -229,6 +225,7 @@ public class OaApplyFinanceController extends BaseController {
 		}*/
     	String insId = wfservice.startProcess(id, defKey,o.getTitle(),null);
     	o.setProcInsId(insId);
+		o.setIfCustomflow(Constants.IF_CUSTOMFLOW_NO);
     	o.update();
     	renderSuccess("提交成功");
     }
@@ -281,6 +278,18 @@ public class OaApplyFinanceController extends BaseController {
 		String id = getPara("id");
 		try{
 			OaApplyFinance o = OaApplyFinance.dao.getById(id);
+			OaCustomflowCase processInstance = ocfcService.getById(o.getProcInsId());
+			OaCustomflowModelnode modelnode =  OaCustomflowModelnodeService.me.getById(processInstance.getCurrentmodelnodeid());
+			if (modelnode.getSequence() == 1) {
+				List<OaCustomflowCasenode> nodes = OaCustomflowCasenodeService.me.getSameLevelNodeByInstanceIdAndModelId(processInstance.getId(), processInstance.getCurrentmodelnodeid());
+				for (OaCustomflowCasenode node : nodes) {
+					if (node.getStatus() != 1 && node.getStatus() != 4) {
+						throw new Exception();
+					}
+				}
+			} else {
+				throw new Exception();
+			}
 			ocfcService.callBack(o.getProcInsId());
 			o.setIfSubmit(Constants.IF_SUBMIT_NO);
 			o.setProcInsId("");
