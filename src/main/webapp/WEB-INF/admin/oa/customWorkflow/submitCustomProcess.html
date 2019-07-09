@@ -154,7 +154,9 @@
             /*var data = common_ajax.ajaxFunc("/admin/oa/contract/apply/startMyProcess?type=#(type)",{"id":'#(businessid)',"modelid":selectmodelid}, "json", null);*/
             if(data.success){
                 pointLion.alertMsg(data.message,"success",null,function(){
-                    doPjax(ctx+'/admin/oa/contract/apply/getListPage?type=1');//跳转到列表页
+                    console.log(getSubmissionReturnTarget());
+
+                    doPjax(getSubmissionReturnTarget());//跳转到列表页
                 });
                 parent.$("#pageTable").bootstrapTable('refresh');
             }else{

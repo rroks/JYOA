@@ -17,15 +17,14 @@
 		                </h3>
 		            </div>
 		            #include("editForm.html")
-					#if("0"==o.if_customflow)
-		            #@buildWorkFlowHisTable(hislist)
-					#end
+
 		        </div>
 		    </div>
 	</div>
 	<script>
 		function save(){
-			var data = common_ajax.ajaxFunc("/admin/oa/apply/finance/save", $('#editForm').serialize(), "json", null);
+			console.log("ctx");
+			var data = common_ajax.ajaxFunc(ctx + "/admin/oa/apply/finance/save", $('#editForm').serialize(), "json", null);
 			if(data.success){
 				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
 					doPjax(ctx+'/admin/oa/apply/finance/getListPage?type=#(type)');//跳转到列表页

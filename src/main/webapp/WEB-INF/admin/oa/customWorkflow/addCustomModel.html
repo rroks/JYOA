@@ -37,8 +37,13 @@
                     <div class="form-group">
                         <input type="hidden" id="firstOrgId" name="oaCustomFlowmodel.visible_org">
                         <label class="col-md-1 control-label col-md-offset-1"><small  style="color: #FF0000">*</small>可见部门(<small  style="color: #FF0000">不可全选</small>):</label>
-                        <div>
-                            <button id="department" onclick="selectManyOrg()" type="button"  class="btn-primary btn-sm" style="float: left;">选择</button>
+                        <div class="col-md-4">
+                            <div class="input-group mar-btm col-md-12">
+                                <input type="text" id="displayDepartment" class="form-control" value disabled>
+                                <span>
+                                    <button id="department" onclick="selectManyOrg()" type="button"  class="btn-primary btn-sm" style="float: left;">选择</button>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -76,9 +81,19 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <input type="hidden" name="oaCustomflowModelnodeList[1].approvaluserid" class="form-control"  value="#(flowCC)">
+                                <input type="hidden" id="oaCustomflowModelnodeList[1].approvaluserid" name="oaCustomflowModelnodeList[1].approvaluserid" class="form-control"  value="#(flowCC)">
                                 <label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>
-                                <button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>
+<!--                                <button id="select" type="button" onclick="openSlectFlowCCDialog(this)"  class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>-->
+
+                                <div class="col-md-6">
+                                    <div class="input-group mar-btm col-md-12">
+                                        <input type="text" id="assessorSelection1" class="form-control" value disabled>
+                                        <span>
+                                            <button onclick="openAssessorChoice(this)" type="button"  class="btn-primary btn-sm" style="float: left;">选择</button>
+                                        </span>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -159,10 +174,13 @@
                 console.log(orgid);
                 pointLion.editManyOrg(function(orgNode) {
                     var firstId = [];
+                    var departments = [];
                     $.each(orgNode, function (i, d) {
                         firstId.push(d.id);
+                        departments.push(d.name);
                     });
                     $("#firstOrgId").val(firstId.join(","));
+                    $("#displayDepartment").val(departments.join(","));
                  },orgid);
             }
 
@@ -192,6 +210,15 @@
                     '<div class="arrow-footer"></div>\n';
 
 
+                var nodeStr = " <div class=\"col-md-6\">\n" +
+                    "                                    <div class=\"input-group mar-btm col-md-12\">\n" +
+                    "                                        <input type=\"text\" id=\"assessorSelection" + nodenum + "\" class=\"form-control\" value disabled>\n" +
+                    "                                        <span>\n" +
+                    "                                            <button onclick=\"openAssessorChoice(this)\" type=\"button\"  class=\"btn-primary btn-sm\" style=\"float: left;\">选择</button>\n" +
+                    "                                        </span>\n" +
+                    "                                    </div>\n" +
+                    "                                </div>";
+
                 let div = document.createElement("div");
                 div.classList.add("rect");
                 div.classList.add("node");
@@ -215,9 +242,10 @@
                     '</div>\n' +
                     '</div>\n' +
                     '<div class="form-group">\n' +
-                    '<input type="hidden"  name="oaCustomflowModelnodeList['+nodenum +'].approvaluserid" class="form-control"  value="#(flowCC)">\n' +
                     '<label class="col-md-2 col-md-offset-2 control-label"><small  style="color: #FF0000">*</small>审批人:</label>\n' +
-                    '<button id="ctlBtn" type="button" onclick="openSlectFlowCCDialog(this)"   class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>\n' +
+                    '<input type="hidden"  id="oaCustomflowModelnodeList['+nodenum +'].approvaluserid" name="oaCustomflowModelnodeList['+nodenum +'].approvaluserid" class="form-control"  value="#(flowCC)">\n' +
+                    // '<button id="ctlBtn" type="button" onclick="openSlectFlowCCDialog(this)"   class="btn-primary btn-sm" style="float: left;margin-left: 1%">选择</button>\n' +
+                    nodeStr +
                     '</div>\n';
                 divnode.appendChild(divarrow);
                 divnode.appendChild(div);
@@ -309,6 +337,8 @@
                     }
                 });
             }
+            
+            
             function openSlectFlowCCDialog(element){
                 var type = $(element).parent().prev().find('select').val();
                 if (type==1) {
@@ -326,8 +356,47 @@
                     });
                 }
             }
+            
+            function openAssessorChoice(element) {
+                // console.log("assessor" + nodenum);
+                // console.log(document.getElementById("assessorSelection" + nodenum).getAttribute("value") + "100000");
+                // // document.getElementById("assessorSelection" + nodenum).value = "hia";
+                // $("#" + "assessorSelection" + nodenum).val("hahaha");
+                // console.log(document.getElementById("assessorSelection" + nodenum).getAttribute("value") + "100000");
+                // console.log($("#" + "assessorSelection" + nodenum));
+                //
+                var type = $(element).parent().parent().parent().parent().prev().find('select').val();
+                var flowcc = $(element).parent().parent().parent().siblings('input');
+                // flowcc.val("haha2");
+                // console.log($(element).parent().parent().parent().siblings('input').val() + "100000");
+                var names = $(element).parent().siblings('input');
+
+                if (type == 1) {
+                    pointLion.selectOneUser(encodeURIComponent("#root"),function(data){
+                        console.log(data);
+                        document.getElementById("assessorSelection" + nodenum).setAttribute("value", data.nameData);
+                        flowcc.val(data.idData);
+                        console.log(document.getElementById("assessorSelection" + nodenum).getAttribute("value"));
+                    });
+                } else {
+                    pointLion.selectManyUser4CC("orgid="+encodeURIComponent("#root")+"&flowCCId="+encodeURIComponent($(flowcc).val()),function(data){
+                        console.log(data.nameData);
+                        // var userNames = [];
+                        // $.each(data, function (i, d) {
+                        //     userNames.push(d.nameData);
+                        // });
+                        // console.log(userNames);
+                        document.getElementById("assessorSelection" + nodenum).setAttribute("value", data.nameData);
+                        // $("#assessorSelection" + nodenum).val(userNames.join(","));
+                        flowcc.val(data.idData);
+                        console.log(document.getElementById("assessorSelection" + nodenum).getAttribute("value"));
+                    });
+                }
+            }
+            
             function appselectchange(element){
-                var flowcc =  $(element).parent().parent().next().find('input');
+                // var flowcc =  $(element).parent().parent().next().find('input');
+                var flowcc = $("#" + "oaCustomflowModelnodeList[" + nodenum +"].approvaluserid");
                 flowcc.val('');
                 if(element.value==3){
                     $(element).parent().parent().next().hide();
@@ -345,6 +414,7 @@
                     });
                 }
             }
+
             function Validator(){
                 $('#editForm').bootstrapValidator({
                     message: 'This value is not valid',

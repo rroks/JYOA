@@ -325,7 +325,7 @@
 				}
 			});
 		}else{
-			doPjax(ctx + '/admin/oa/CustomFlow/getSubmitCustomProcess?type=#(type)&businessid=' + taskid);
+			doPjax(ctx + '/admin/oa/CustomFlow/getSubmitCustomProcess?type=#(type)&businessid=' + taskid + '&returnTo=' + window.location.href);
 			// layer.open({
 			// 	type: 2,
 			// 	title: false, //不显示标题栏
@@ -346,6 +346,10 @@
 	function commitProcess(taskid,modelid,approvaluserid,SelectFileid) {
 		var data = common_ajax.ajaxFunc("/admin/oa/contract/apply/startMyProcess?type=#(type)",{"id":taskid,"modelid":modelid,"approvaluserid":approvaluserid,"SelectFileid":SelectFileid}, "json", null);
 		return data;
+	}
+
+	function getSubmissionReturnTarget() {
+		return ctx+'/admin/oa/contract/apply/getListPage?type=1';
 	}
 
 	//撤回

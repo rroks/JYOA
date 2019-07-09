@@ -324,6 +324,11 @@
 		var data = common_ajax.ajaxFunc("/admin/oa/apply/finance/startMyProcess?type=#(type)",{"id":taskid,"modelid":modelid,"approvaluserid":approvaluserid,"SelectFileid":SelectFileid}, "json", null);
 		return data;
 	}
+
+	function getSubmissionReturnTarget() {
+		return ctx+'/admin/oa/apply/finance/getListPage?type=1';
+	}
+
 	//办理任务
 	function doTask(taskid,id,defkey){
 		layer.open({

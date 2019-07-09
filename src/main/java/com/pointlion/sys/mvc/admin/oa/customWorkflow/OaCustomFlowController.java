@@ -74,8 +74,8 @@ public class OaCustomFlowController extends BaseController {
         setAttr("businessid", id);
         String type = getPara("type");
         setAttr("type", type);
-//        setAttr("data",JSON.toJSONString(list));
         setAttr("data", JSONArray.toJSONString(list));
+        setAttr("returnTo", getPara("returnTo"));
         render("submitCustomProcess.html");
     }
 
