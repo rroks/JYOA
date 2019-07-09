@@ -20,7 +20,7 @@ public class MobileRoutes extends Routes{
 		add("/mobile/login",MobileLoginController.class);
 		add("/mobile/bumph",MobileBumphController.class);
 		add("/mobile/help",CommonHelpController.class);
-		add("/mobile/assessment",MobileWorkflowController.class);
+		add("/mobile/workflow",MobileWorkflowController.class);
 		add("/mobile/custom/assessment", ProcessController.class);
 		add("/mobile/custom/assessment/instance", ProcessInstanceController.class);
 	}
