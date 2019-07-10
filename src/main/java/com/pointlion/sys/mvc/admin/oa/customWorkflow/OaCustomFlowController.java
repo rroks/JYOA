@@ -27,6 +27,7 @@ public class OaCustomFlowController extends BaseController {
     public static final OaCustomflowModelnodeService nodeservice = OaCustomflowModelnodeService.me;
     public static final WorkFlowService wfservice = WorkFlowService.me;
     public static final OaCustomflowTypeService typeService = OaCustomflowTypeService.me;
+    public static final OaCustomflowCaseService caseService = OaCustomflowCaseService.me;
     /***
      * 列表页面
      */
@@ -207,6 +208,20 @@ public class OaCustomFlowController extends BaseController {
         customProcess.setState(processStatus);
         customProcess.update();
         renderSuccess(customProcess.getState().toString());
+    }
+
+    public void deleteCUstomProcess() {
+        String processId = getPara("customProcessId");
+        if (service.isInUse(processId)) {
+            service.deleteById(processId);
+            if (null == service.getById(processId)) {
+                renderSuccess("删除成功");
+            } else {
+                renderError("不能删除！");
+            }
+        } else {
+            renderError("不能删除！");
+        }
     }
 
     /***
@@ -441,7 +456,20 @@ public class OaCustomFlowController extends BaseController {
             o.update();
             renderSuccess();
         }
+    }
 
+    public void deleteType() {
+        String id = getPara("id");
+        OaCustomflowType o = typeService.getById(id);
+
+        Map<String,String> map = new HashMap<>();
+        map.put("type3",id);
+        if(service.getlistbyparam(map).size()>0){
+            renderError("当前类别下有审批流程关联时，不可停用");
+        }else{
+            o.delete();
+            renderSuccess();
+        }
     }
 
 

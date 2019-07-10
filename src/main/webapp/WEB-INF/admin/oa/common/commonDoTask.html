@@ -57,7 +57,7 @@
 												<div class="col-md-8">
 													<input name="signBase64Stream" type="hidden">
 													<img id="signimg"  width="100" height="60"/>
-													<input type="button" disabled = "disabled" id="pluginapp" class="btn btn-mint" onClick="btn_pluginapp()" value="请签字"></input>
+													<input type="button" id="pluginapp" class="btn btn-mint" onClick="btn_pluginapp()" value="请签字"></input>
 												</div>
 											</div>
 
@@ -155,6 +155,7 @@
 			evt.initCustomEvent('hanvon_signProEvent', true, false, message);
 			document.dispatchEvent(evt);
 		}
+
 		document.addEventListener("hanvonSigndataEvent",function(evt){
 			/*
               监听hanvonSigndataEvent事件获取签名数据值。

@@ -4,15 +4,15 @@
         <div class="panel lion-fullHeight">
             <div class="panel-body">
                 <a id="add" class="btn btn-mint data-toolbar" onclick="doPjax('#(ctx)/admin/oa/CustomFlow/Add')" href="javascript:void(0);"><i class="demo-pli-add"></i> 添加</a>
-                <div class="row ">
-                    <div class="form-group col-sm-3 col-md-offset-1">
-                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">流程名称:</label>
+                <div class="row">
+                    <div class="form-group col-sm-3" >
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 5px">流程名称:</label>
                         <div class="col-sm-8" id="serachmodelname">
                             <input type="text"  class="col-sm-12 form-control"   value="#(o?o.name:'')">
                         </div>
                     </div>
                     <div class="form-group col-sm-3" id="serachmodeltype1">
-                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">一类类型:</label>
+                        <label class="col-sm-3 control-label text-center" style="margin-top: 5px">一类类型:</label>
                         <div class="col-sm-8 select">
                             <select id="select-first" class="col-sm-12" onchange="type1selectchange()" >
                                 <option value="All">全部</option>
@@ -23,39 +23,40 @@
                         </div>
                     </div>
                     <div class="form-group col-sm-3" id="serachmodeltype2">
-                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">二类类型:</label>
+                        <label class="col-sm-3 control-label text-center" style="margin: 5px">二类类型:</label>
                         <div class="col-sm-8 select">
                             <select id="select-second" class="col-sm-12 " onchange="type2selectchange()" >
                                 <option value="All">全部</option>
                             </select>
                         </div>
                     </div>
-            </div>
-                <div class="row">
-                    <div class="form-group col-sm-3 col-md-offset-1" id="serachmodeltype3">
-                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">三类类型:</label>
+                    <div class="form-group col-sm-3" id="serachmodeltype3" >
+                        <label class="col-sm-3 control-label text-center" style="margin: 5px">三类类型:</label>
                         <div class="col-sm-8 select">
-                            <select id="select-third" class="col-sm-12 " >
+                            <select id="select-third" class="col-sm-12">
                                 <option value="All">全部</option>
                             </select>
                         </div>
                     </div>
-                    <div  class="row col-sm-3 form-group" style="margin-left: 5px">
-                        <label class="col-sm-3 control-label text-center" style="margin-top: 4px">创建时间:</label>
-                        <div class="col-sm-4" id="searchStartTime">
+            </div>
+                <div class="row">
+                    <div  class="row col-sm-6 form-group" style="margin-left: 5px">
+<!--                        <label class="col-sm-3 control-label text-center" style="margin-top: 5px">创建时间:</label>-->
+                        <div class="col-sm-6" id="searchStartTime">
                             <div class="input-group date form_datetime col-sm-12">
                                 <input class="form-control" col-sm-12 type="text" placeholder="开始日期" >
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                             </div>
                         </div>
-                        <div class="col-sm-4" id="searchEndTime">
+                        <div class="col-sm-6" id="searchEndTime">
                             <div class="input-group date form_datetime col-sm-12" >
                                 <input class="form-control" col-sm-12 type="text" placeholder="结束日期" >
                                 <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                             </div>
                         </div>
                     </div>
-                    <div class="row form-group col-sm-4" style="margin-left: 5px" id="modelstate">
+
+                    <div class="row form-group col-sm-6" style="margin-left: 5px" id="modelstate">
                         <label class="col-sm-2 control-label text-center" style="margin-top: 4px">流程状态:</label>
                         <div class="radio-inline col-sm-8" style="margin-top: 4px">
                             <label class="radio-inline"> <input type="radio" name="optionsRadios" value="all" checked> 全部</label>

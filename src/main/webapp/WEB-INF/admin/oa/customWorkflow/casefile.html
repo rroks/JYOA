@@ -3,25 +3,29 @@
     <div class="col-sm-12 eq-box-sm">
         <div class="panel lion-fullHeight">
             <div class="panel-body">
-                <div class="col-sm-2" id="searchnumber">
-                    <input class="form-control" type="text" placeholder="请输入编号搜索">
+                <div class="col-sm-2" id="searchnumber" style="float:left">
+                    <input class="form-control" type="text" placeholder="编号">
                 </div>
                 <div class="col-sm-2" id="searchName" style="float:left">
-                    <input class="form-control" type="text" placeholder="请输入申请人搜索">
+                    <input class="form-control" type="text" placeholder="申请人">
                 </div>
-                <div class="col-sm-2" id="searchStartTime">
+                <div class="col-sm-3" id="searchStartTime">
                     <div class="input-group date form_datetime col-md-12" style="float:left">
                         <input class="form-control" type="text" placeholder="开始日期" readonly readonly>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                     </div>
                 </div>
-                <div class="col-sm-2" id="searchEndTime">
+                <div class="col-sm-3" id="searchEndTime">
                     <div class="input-group date form_datetime col-md-12" style="float:left">
                         <input class="form-control" type="text" placeholder="结束日期" readonly readonly>
                         <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
                     </div>
                 </div>
-                <a id="search" class="btn btn-mint data-toolbar" onclick="searchTable()" href="javascript:void(0);"><i class="demo-pli-add"></i> 搜索</a>
+                <div class="col-sm-2">
+                    <a id="search" class="btn btn-mint data-toolbar" onclick="searchTable()" href="javascript:void(0);">
+                        <i class="demo-pli-add"></i> 搜索
+                    </a>
+                </div>
                 <table id="pageTable" class="demo-add-niftycheck" data-toolbar="#searchnumber,#searchName,#searchStartTime,#searchEndTime,#search,#controlTable"
                        data-search="true"
                        data-show-refresh="true"

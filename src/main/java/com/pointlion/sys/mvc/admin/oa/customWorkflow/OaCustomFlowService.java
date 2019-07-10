@@ -108,6 +108,16 @@ public class OaCustomFlowService {
     }
 
     /***
+     * 删除
+     * @param id
+     */
+    @Before(Tx.class)
+    public void deleteById(String id){
+        OaCustomFlowmodel o = me.getById(id);
+        o.delete();
+    }
+
+    /***
      * 根据主键查询
      */
     public void savemodelorg(String modelid,String orgids){
@@ -169,5 +179,10 @@ public class OaCustomFlowService {
             sj.add("'" + org.getOrgid() + "'");
         }
         return sj.toString();
+    }
+
+    public boolean isInUse(String modelId) {
+        String sql = "select * from oa_customflow_case where modelid = '%s' and status in (3,4)";
+        return Db.find(String.format(sql, modelId)).isEmpty();
     }
 }
