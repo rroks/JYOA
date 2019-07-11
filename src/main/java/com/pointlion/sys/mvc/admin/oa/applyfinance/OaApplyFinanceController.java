@@ -100,8 +100,9 @@ public class OaApplyFinanceController extends BaseController {
     public void startProcess(){
     	String id = getPara("id");
     	OaApplyFinance o = OaApplyFinance.dao.getById(id);
-    	o.setIfSubmit(Constants.IF_SUBMIT_YES);
+    	o.setIfSubmit(Constants.IF_SUBMIT_NO);
     	String insId = wfservice.startProcess(id, OAConstants.DEFKEY_PROJECT_CHANGE_MEMBER,o.getTitle(),null);
+		o.setIfCustomflow(Constants.IF_CUSTOMFLOW_NO);
     	o.setProcInsId(insId);
     	o.update();
     	renderSuccess("提交成功");

@@ -14,6 +14,7 @@ import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.pointlion.sys.interceptor.MainPageTitleInterceptor;
 import com.pointlion.sys.mvc.admin.oa.common.BusinessUtil;
+import com.pointlion.sys.mvc.admin.oa.common.CommonFlowController;
 import com.pointlion.sys.mvc.admin.oa.common.FlowCCService;
 import com.pointlion.sys.mvc.admin.oa.common.OAConstants;
 import com.pointlion.sys.mvc.admin.oa.customWorkflow.OaCustomflowCaseService;
@@ -27,7 +28,8 @@ import com.pointlion.sys.mvc.common.utils.DateUtil;
 import com.pointlion.sys.mvc.common.utils.StringUtil;
 import com.pointlion.sys.mvc.common.utils.UuidUtil;
 import com.pointlion.sys.plugin.shiro.ShiroKit;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Before(MainPageTitleInterceptor.class)
@@ -37,6 +39,8 @@ public class OaApplyFinanceController extends BaseController {
 	public static FlowCCService ccService = FlowCCService.me;
 	public static OaCustomflowCaseService ocfcService = OaCustomflowCaseService.me;
 	public static OaCustomflowCasenodeService ocfcNodeService = OaCustomflowCasenodeService.me;
+
+	private Logger logger = LoggerFactory.getLogger(OaApplyFinanceController.class);
 	
 	/***
 	 * 列表页面
@@ -111,33 +115,42 @@ public class OaApplyFinanceController extends BaseController {
      * 保存
      */
     public void save(){
-    	OaApplyFinance o = getModel(OaApplyFinance.class);
-    	if(StrKit.notBlank(o.getProjectId())){
-    		o.setProjectName(OaProject.dao.getById(o.getProjectId()).getProjectName());
-    	}
-    	if(StrKit.notBlank(o.getId())){
-    		OaProject p = OaProject.dao.getById(o.getProjectId());
-    		String title = "申请人："+o.getApplyerName()+"   项目："+(p!=null?p.getProjectName():"");
-    		o.setTitle(title);
-    		o.update();
-    		ccService.addFlowCC(this, o.getId(), service.getDefKeyByType(o.getType()),OaApplyFinance.tableName);
-    	}else{
-    		
-    		String username = ShiroKit.getUsername();
-     		String id = UuidUtil.getUUID();
-     		o.setId(id);
-     		OaProject p = OaProject.dao.getById(o.getProjectId());
-     		String title = "申请人："+o.getApplyerName()+"   项目："+(p!=null?p.getProjectName():"");
-     		o.setTitle(title);
-     		o.setCreateTime(DateUtil.getTime());
-    		
-    		Integer num = BusinessUtil.getAddContractBankaccountFinanceNumNum(username); 
-    		o.setFinanceNumNum(num);//自增编号
-    		o.setFinanceNum(BusinessUtil.getAddNum(num,username));
-    		o.setFinanceNumYear(DateUtil.format(new Date(), "yyyyMM"));
-    		o.save();
-    		ccService.addFlowCC(this, id, service.getDefKeyByType(o.getType()),OaApplyFinance.tableName);
-    	}
+		try {
+			OaApplyFinance o = getModel(OaApplyFinance.class);
+			logger.info("_________________\n" + o.toJson());
+			if(StrKit.notBlank(o.getProjectId())){
+				o.setProjectName(OaProject.dao.getById(o.getProjectId()).getProjectName());
+				logger.info("+++++++++++++++++++\n" + o.toJson());
+			}
+			if(StrKit.notBlank(o.getId())){
+				OaProject p = OaProject.dao.getById(o.getProjectId());
+				String title = "申请人："+o.getApplyerName()+"   项目："+(p!=null?p.getProjectName():"");
+				o.setTitle(title);
+				o.update();
+				logger.info("==================\n" + o.toJson());
+				ccService.addFlowCC(this, o.getId(), service.getDefKeyByType(o.getType()),OaApplyFinance.tableName);
+			}else{
+				String username = ShiroKit.getUsername();
+				 String id = UuidUtil.getUUID();
+				 o.setId(id);
+				 OaProject p = OaProject.dao.getById(o.getProjectId());
+				 String title = "申请人："+o.getApplyerName()+"   项目："+(p!=null?p.getProjectName():"");
+				 o.setTitle(title);
+				 o.setCreateTime(DateUtil.getTime());
+
+				Integer num = BusinessUtil.getAddContractBankaccountFinanceNumNum(username);
+				o.setFinanceNumNum(num);//自增编号
+				o.setFinanceNum(BusinessUtil.getAddNum(num,username));
+				o.setFinanceNumYear(DateUtil.format(new Date(), "yyyyMM"));
+				o.save();
+				logger.info("+++++++++++++++++" + o.toJson());
+				ccService.addFlowCC(this, id, service.getDefKeyByType(o.getType()),OaApplyFinance.tableName);
+			}
+			logger.info("=====================\n reach");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info(e.getMessage(), e);
+		}
     	renderSuccess();
     }
     /***

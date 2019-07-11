@@ -67,33 +67,11 @@ public class ProcessController extends BaseController {
     }
 
     /**
-     * 获取单类类型表
-     */
-    public void getTypeByLevel() {
-        String typeLevel = getPara("typeLevel");
-        String parentTypeId = getPara("parentTypeId");
-        List<OaCustomflowType> typeList = processTypeService.getList(Integer.parseInt(typeLevel), parentTypeId);
-        renderJson(typeList);
-    }
-
-    /**
      * 获取流程模板列表
+     * @deprecated
      */
     public void getAllCustomProcessList() {
         List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of("orgid", ShiroKit.getUserOrgId(), "userId", ShiroKit.getUserId()));
-        renderJson(list);
-    }
-
-    /**
-     * 获取所选审批流程模板信息
-     */
-    public void getCustomProcessDetail() throws UnsupportedEncodingException {
-        String customProcessName = URLDecoder.decode(getPara("customProcessName", ""), "utf-8");
-
-        List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of(
-                "modelname", customProcessName,
-                "userId", ShiroKit.getUserId()
-        ));
         renderJson(list);
     }
 
@@ -119,15 +97,21 @@ public class ProcessController extends BaseController {
     }
 
     /**
-     * 保存
+     * 获取所选审批流程模板信息
      */
-    public void saveFlow() {
-        // 可以直接调用 OaCustomFlowController.save()
+    public void getCustomProcessDetail() throws UnsupportedEncodingException {
+        String customProcessName = URLDecoder.decode(getPara("customProcessName", ""), "utf-8");
 
+        List<OaCustomFlowmodel> list = customProcessService.getlistbyparam(ImmutableMap.of(
+                "modelname", customProcessName,
+                "userId", ShiroKit.getUserId()
+        ));
+        renderJson(list);
     }
 
     /**
      * 获取编辑页面可变更信息
+     * @deprecated
      */
     public void getEditableCustomProcessDetail() {
         // flow Id
@@ -182,6 +166,18 @@ public class ProcessController extends BaseController {
     }
 
     /**
+     * 撤回
+     */
+    public void withdrawSubmision() {
+        String assessmentProcessId = getPara("id");
+        OaCustomFlowmodel flowModel = OaCustomFlowmodel.dao.getById(assessmentProcessId);
+        flowModel.update();
+        renderSuccess("撤回成功");
+        // 可能需要 catch 异常
+        // renderError("撤回失败");
+    }
+
+    /**
      * 获取类别维护列表
      */
     public void getType() {
@@ -198,6 +194,17 @@ public class ProcessController extends BaseController {
     }
 
     /**
+     * 获取单类类型表
+     * @deprecated
+     */
+    public void getTypeByLevel() {
+        String typeLevel = getPara("typeLevel");
+        String parentTypeId = getPara("parentTypeId");
+        List<OaCustomflowType> typeList = processTypeService.getList(Integer.parseInt(typeLevel), parentTypeId);
+        renderJson(typeList);
+    }
+
+    /**
      * 新增与保存类型
      */
     public void saveType() {
@@ -205,8 +212,8 @@ public class ProcessController extends BaseController {
         String typeName = getPara("oaCustomflowTypeType.name");
         String typeOne = getPara("oaCustomflowTypeTypeOne");
         String typeTwo = getPara("oaCustomflowTypeTypeTwo");
-        flowType.setName(typeName);
 
+        flowType.setName(typeName);
         flowType.setCreateUser(ShiroKit.getUserId());
         flowType.setCreateTime(DateUtil.getNowtime());
 
@@ -221,6 +228,7 @@ public class ProcessController extends BaseController {
             }
         }
 
+        // should verify the type name since there could be duplicated type name
         if (StrKit.notBlank(flowType.getId())) {
             flowType.update();
         } else {
@@ -270,17 +278,5 @@ public class ProcessController extends BaseController {
         }
         proceeType.update();
         renderSuccess();
-    }
-
-    /**
-     * 撤回
-     */
-    public void withdrawSubmision() {
-        String assessmentProcessId = getPara("id");
-        OaCustomFlowmodel flowModel = OaCustomFlowmodel.dao.getById(assessmentProcessId);
-        flowModel.update();
-        renderSuccess("撤回成功");
-        // 可能需要 catch 异常
-        // renderError("撤回失败");
     }
 }

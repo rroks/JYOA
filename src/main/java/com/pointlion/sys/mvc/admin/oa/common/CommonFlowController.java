@@ -23,8 +23,13 @@ import com.pointlion.sys.mvc.admin.oa.workflow.WorkFlowService;
 import com.pointlion.sys.mvc.common.base.BaseController;
 import com.pointlion.sys.mvc.mobile.common.MobileService;
 import com.pointlion.sys.plugin.shiro.ShiroKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommonFlowController extends BaseController{
+
+	private Logger logger = LoggerFactory.getLogger(CommonFlowController.class);
+
 	static final CommonFlowService service = CommonFlowService.me;
 	static WorkFlowService wfservice = WorkFlowService.me;
 	static final OaCustomflowCaseService customService = OaCustomflowCaseService.me;
@@ -262,8 +267,11 @@ public class CommonFlowController extends BaseController{
 	@SuppressWarnings("rawtypes")
 	public void submitTask(){
 		try{
+			logger.info("+++方法开始++++");
 			String taskid = getPara("taskId");
+			logger.info("++++任务ID+++" + taskid);
 			VTasklist task = VTasklist.dao.getTaskRecord(taskid);
+			logger.info("if task null " + task.toString() + "\n" + task.toJson());
 			Map<String,Object> var = new HashMap<String,Object>();
 			if(task!=null){
 				if("ReEdit".equals(task.getTASKDEFKEY())){//如果是重新编辑
@@ -278,7 +286,8 @@ public class CommonFlowController extends BaseController{
 			var.put("pass", getPara("pass"));
 			String HWsign = getPara("signBase64Stream");
 			String userid = ShiroKit.getUserId();
-			if(HWsign!=null){
+			logger.info(HWsign + " xx " + userid);
+			if(null != HWsign){
 				String basepath = this.getRequest().getSession().getServletContext().getRealPath("");
 				String pictureId = UuidUtil.getUUID();
 				String filename = userid +taskid+ ".png";
@@ -306,6 +315,7 @@ public class CommonFlowController extends BaseController{
 			renderSuccess();
 		}catch(Exception e){
 			e.printStackTrace();
+			logger.error("+++++++", e);
 			renderError();
 		}
 		
