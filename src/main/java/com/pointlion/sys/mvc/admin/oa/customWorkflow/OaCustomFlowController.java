@@ -210,14 +210,14 @@ public class OaCustomFlowController extends BaseController {
         renderSuccess(customProcess.getState().toString());
     }
 
-    public void deleteCUstomProcess() {
+    public void deleteCustomProcess() {
         String processId = getPara("customProcessId");
         if (service.isInUse(processId)) {
             service.deleteById(processId);
             if (null == service.getById(processId)) {
                 renderSuccess("删除成功");
             } else {
-                renderError("不能删除！");
+                renderError("删除出错！");
             }
         } else {
             renderError("不能删除！");
@@ -459,16 +459,30 @@ public class OaCustomFlowController extends BaseController {
     }
 
     public void deleteType() {
-        String id = getPara("id");
-        OaCustomflowType o = typeService.getById(id);
+        String typeId = getPara("typeId");
+        String typeLevel = getPara("typeLevel");
+        OaCustomflowType o = typeService.getById(typeId);
 
         Map<String,String> map = new HashMap<>();
-        map.put("type3",id);
-        if(service.getlistbyparam(map).size()>0){
-            renderError("当前类别下有审批流程关联时，不可停用");
-        }else{
+        switch (typeLevel) {
+            case "1":
+                map.put("type1", typeId);
+                break;
+            case "2":
+                map.put("type2", typeId);
+                break;
+            case "3":
+                map.put("type3", typeId);
+                break;
+        }
+
+        if(service.getlistbyparam(map).size() > 0){
+            renderError("当前类别下有审批流程关联时，不可删除");
+        } else if (!typeLevel.equals("3") && typeService.hasChild(typeId)) {
+            renderError("当前类别下子类别，不可删除");
+        } else {
             o.delete();
-            renderSuccess();
+            renderSuccess("删除成功");
         }
     }
 

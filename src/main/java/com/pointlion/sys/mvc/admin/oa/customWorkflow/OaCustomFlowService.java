@@ -141,9 +141,20 @@ public class OaCustomFlowService {
      */
     public List<OaCustomFlowmodel> getlistbyparam(Map<String,String> param){
         String sql  = "select o.*,p.name create_user from "+TABLE_NAME+" o LEFT JOIN sys_user p ON o.create_user=p.id  where o.state=1 ";
+
+        String type1 = param.get("type1");
+        if(StrKit.notBlank(type1)){
+            sql += " and o.type_1 = '" + type1 + "'";
+        }
+
+        String type2 = param.get("type2");
+        if(StrKit.notBlank(type2)){
+            sql += " and o.type_2 = '" + type2 + "'";
+        }
+
         String type3 = param.get("type3");
         if(StrKit.notBlank(type3)){
-            sql+=" and o.type_3 = '"+type3+"'";
+            sql += " and o.type_3 = '" + type3 + "'";
         }
         if(StrKit.notBlank(param.get("modelname"))){
             sql+=" and o.name like '%"+param.get("modelname")+"%'";
@@ -154,8 +165,12 @@ public class OaCustomFlowService {
             }
         }
 
-        sql += " and (o.id in (select distinct map.modelid from oa_customflow_model_org map where map.orgid in (" + getAuthorizedOrg(param.get("userId")) + ")) ";
-        sql += " or o.create_user = '" + param.get("userId") + "') ";
+        if (StrKit.notBlank(getAuthorizedOrg(param.get("userId")))) {
+            sql += " and (o.id in (select distinct map.modelid from oa_customflow_model_org map where map.orgid in (" + getAuthorizedOrg(param.get("userId")) + ")) ";
+        }
+        if (StrKit.notBlank(param.get("userId"))) {
+            sql += " or o.create_user = '" + param.get("userId") + "') ";
+        }
 
 //        if(StrKit.notBlank(param.get("orgid"))){
 //            sql+=" and (o.id in (select map.modelid from oa_customflow_model_org map where map.orgid ='" + param.get("orgid") + "') ";

@@ -131,7 +131,7 @@
         field: 'control',
         title: '操作',
         align: 'left',
-        width:'180',
+        width:'200',
         formatter:function(value,row,index){
             //通过formatter可以自定义列显示的内容
             //value：当前field的值，即id
@@ -149,7 +149,9 @@
                 enableBtn = '停用';
                 enableState = 0;
             }
-            a = a + '<a class="label label-table label-success" id="'+ row.id + '" onclick=\'enableProcess("' + row.id +'", "' + enableState + '")\' target="_blank">' + enableBtn + '</a>&nbsp;';
+            a = a + '<a class="label label-table label-warning" id="'+ row.id + '" onclick=\'enableProcess("' + row.id +'", "' + enableState + '")\' target="_blank">' + enableBtn + '</a>&nbsp;';
+            a = a + '<a class="label label-table label-danger" onclick=\'deleteCustomProcess("' + row.id + '")\' target="_blank">删除</a>&nbsp;';
+
             return a;
         }
     }];
@@ -168,8 +170,9 @@
             dataType:'json',
             success:function(data){
                 alert("修改成功!");
-                $('#pageTable').bootstrapTable('destroy');
-                $('#pageTable').bootstrapTable(opt);
+                // $('#pageTable').bootstrapTable('destroy');
+                // $('#pageTable').bootstrapTable(opt);
+                $('#pageTable').bootstrapTable('refresh');
 
                 // var caller = document.getElementById(processId);
                 // if (data.message === "1") {
@@ -182,6 +185,28 @@
             },
             error:function(){
                 alert("请求失败")
+            }
+        });
+    }
+    
+    function deleteCustomProcess(processId) {
+        $.ajax({
+            type:'post',
+            url:ctx+"/admin/oa/CustomFlow/deleteCustomProcess",
+            data:{
+                customProcessId: processId,
+                status: status
+            },
+            cache:false,
+            dataType:'json',
+            success:function(data){
+                alert(data.message);
+                $('#pageTable').bootstrapTable('refresh');
+                // $('#pageTable').bootstrapTable('destroy');
+                // $('#pageTable').bootstrapTable(opt);
+            },
+            error:function(data){
+                alert(data.message)
             }
         });
     }

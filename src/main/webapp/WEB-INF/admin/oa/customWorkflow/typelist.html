@@ -114,11 +114,14 @@
             //row：当前行的数据
             var a = '';
             a = a + '<a class="WebUploader label label-table label-success" onclick="opentypeeditPage(\''+row.id+'\')" href="javascript:void(0);" target="_blank">修改</a>&nbsp;';
+            var enableBtn;
             if(row.state==1){
-                a = a + '<a class="label label-table label-success" onclick="startstop(\''+row.id+'\',\''+row.state+'\')" href="javascript:void(0);">停用</a>&nbsp;';
+                enableBtn = "停用";
             }else{
-                a = a + '<a class="label label-table label-success" onclick="startstop(\''+row.id+'\',\''+row.state+'\')" href="javascript:void(0);">启用</a>&nbsp;';
+                enableBtn = "启用";
             }
+            a = a + '<a class="label label-table label-warning" onclick="startstop(\''+row.id+'\',\''+row.state+'\')" href="javascript:void(0);">' + enableBtn + '</a>&nbsp;';
+            a = a + '<a class="label label-table label-danger" onclick="deleteType(\'' + row.id + '\',\'' + row.level + '\')" href="javascript:void(0);">删除</a>&nbsp;';
 
             return a;
         }
@@ -295,9 +298,6 @@
             isOutAnim : false ,
             btnAlign: 'c',
             content: ctx+'/admin/oa/CustomFlow/gettypeEditPage?id='+insid,
-            success: function(layero){
-
-            },
             end: function () {
                 // 刷新表格
                 $('#pageTable').bootstrapTable('refresh');
@@ -321,6 +321,26 @@
                 });
             }else{
                 pointLion.alertMsg(data.message,"danger",null,null);
+            }
+        });
+    }
+
+    function deleteType(typeId, typeLevel) {
+        $.ajax({
+            type:'post',
+            url:ctx + "/admin/oa/CustomFlow/deleteType",
+            data:{
+                typeId: typeId,
+                typeLevel: typeLevel
+            },
+            cache:false,
+            dataType:'json',
+            success:function(data){
+                alert(data.message);
+                $('#pageTable').bootstrapTable('refresh');
+            },
+            error:function(data){
+                alert(data.message)
             }
         });
     }

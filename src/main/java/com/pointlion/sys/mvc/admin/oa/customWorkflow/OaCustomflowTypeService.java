@@ -94,4 +94,9 @@ public class OaCustomflowTypeService {
         return OaCustomflowType.dao.find(String.format(sql, typeObj)).size() == 0;
     }
 
+    public boolean hasChild(String typeId) {
+        String sql = "select * from %s where parent = '%s'";
+        return OaCustomflowType.dao.find(String.format(sql, TABLE_NAME, sql)).size() != 0;
+    }
+
 }
