@@ -263,7 +263,7 @@ public class OaContractService{
 		File file = new File(exportURL);
         FileOutputStream fopts = new FileOutputStream(file);  
         doc.write(fopts);  
-        fopts.close(); 
+        fopts.close();
 		if(file.exists()){
 			return file;
 		}else{

@@ -14,6 +14,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.pointlion.sys.mvc.admin.oa.common.CommonFlowController;
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.editor.constants.ModelDataJsonConstants;
@@ -66,10 +67,14 @@ import com.pointlion.sys.mvc.common.utils.StringUtil;
 import com.pointlion.sys.mvc.mobile.common.MobileService;
 import com.pointlion.sys.plugin.activiti.ActivitiPlugin;
 import com.pointlion.sys.plugin.shiro.ShiroKit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkFlowService {
 	public static final WorkFlowService me = new WorkFlowService();
 	public static final SysMobileMessageService mobileMessageService = SysMobileMessageService.me;
+	private Logger logger = LoggerFactory.getLogger(CommonFlowController.class);
+
 	/**
 	 * 创建新模型
 	 * @throws UnsupportedEncodingException 
@@ -628,6 +633,7 @@ public List<String> getAllDefkeyList(){
 	 */
 	public List<Record> getHisTaskList2(String insid){
 		List<Record> taskList = Db.find("select  t.NAME_ taskName,t.ASSIGNEE_ assignee,t.EXECUTION_ID_ exeId,t.ID_ taskId,t.END_TIME_ endTime,c.MESSAGE_ message from act_hi_taskinst t LEFT JOIN act_hi_comment c  ON c.TASK_ID_=t.ID_ where t.proc_inst_id_ = '"+insid+"' order by t.end_time_ is null,t.end_time_ asc");
+		logger.debug("========================= getHisTaskList2 \n" + taskList.size());
 		for(Record r : taskList){
 			String assignee = r.getStr("assignee");
 			if(StrKit.notBlank(assignee)){

@@ -236,7 +236,7 @@ public class OaContractApplyController extends BaseController {
         	o.setProcInsId("");
         	o.update();
     		renderSuccess("撤回成功");
-    	}catch(Exception e){
+    	} catch (Exception e){
     		e.printStackTrace();
     		renderError("撤回失败");
     	}

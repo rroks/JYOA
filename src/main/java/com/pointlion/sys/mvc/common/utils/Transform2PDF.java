@@ -55,17 +55,20 @@ public class Transform2PDF {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
 
-    public static void main(String args[]) {
-        String inputFile = "D://申请人：彭仕银   项目：_2018-12-01_09-30-06.docx";
-        String outputFile = "D://申请人：管理员   项目：_2018-12-11_10-44-31.pdf";
-        office2PDF(inputFile, outputFile);
-        System.out.println(officeAddress);
-        System.out.println(officeHome);
-        System.out.println(portNumber);
+//    public static void main(String args[]) {
+//        String inputFile = "D://申请人：彭仕银   项目：_2018-12-01_09-30-06.docx";
+//        String outputFile = "D://申请人：管理员   项目：_2018-12-11_10-44-31.pdf";
+//        office2PDF(inputFile, outputFile);
+//        System.out.println(officeAddress);
+//        System.out.println(officeHome);
+//        System.out.println(portNumber);
 //		System.out.println("1         ");
-    }
+//    }
 }

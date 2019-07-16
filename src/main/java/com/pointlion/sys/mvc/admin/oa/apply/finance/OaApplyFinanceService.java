@@ -1,9 +1,6 @@
 package com.pointlion.sys.mvc.admin.oa.apply.finance;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pointlion.sys.mvc.admin.oa.common.CommonFlowController;
 import org.apache.commons.lang3.StringUtils;
 
 import com.jfinal.aop.Before;
@@ -31,11 +29,15 @@ import com.pointlion.sys.mvc.common.utils.ModelToMapUtil;
 import com.pointlion.sys.mvc.common.utils.office.word.POITemplateUtil;
 import com.pointlion.sys.mvc.common.utils.word.CustomXWPFDocument;
 import com.pointlion.sys.mvc.common.utils.word.WordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OaApplyFinanceService {
     public static final OaApplyFinanceService me = new OaApplyFinanceService();
     public static final String TABLE_NAME = OaApplyFinance.tableName;
     public static final WorkFlowService workFlowService = new WorkFlowService();
+
+    private Logger logger = LoggerFactory.getLogger(OaApplyFinanceService.class);
 
     /***
      * 根据主键查询
@@ -120,6 +122,7 @@ public class OaApplyFinanceService {
      */
     public File export(String id, HttpServletRequest request) throws Exception {
         OaApplyFinance finance = OaApplyFinance.dao.findById(id);
+        logger.info("====================\n OaApplyFinance " + finance.toJson());
 
         if ("3".equals(finance.getType())) {//如果是税费申请
             finance.setCommonPrice(finance.getTaxPrice());
@@ -128,11 +131,15 @@ public class OaApplyFinanceService {
         String path = request.getSession().getServletContext().getRealPath("") + "/WEB-INF/admin/oa/apply/finance/template/";
         String basepath = request.getSession().getServletContext().getRealPath("");
         String templateUrl = path + "finance_" + finance.getType() + ".docx";
+        logger.info("====================\n path" + path + "=============\n" + basepath);
+        logger.info("===================\n templateUrl " + templateUrl);
         OaContract contract = OaContract.dao.getById(finance.getContractId());
 //		OaProject project = OaProject.dao.getById(finance.getProjectId());
         List<Record> list = workFlowService.getHisTaskList2(finance.getProcInsId());
         Map<String, Object> data = new HashMap<>(16);
         String exportURL = path + finance.getTitle() + "_" + finance.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+//        String exportURL = path + finance.getTitle() + "_" + finance.getCreateTime().replaceAll("：", "-").replaceAll(" ", "_") + ".docx";
+        logger.info("====================\n exportURL" + exportURL);
         //       if (finance.getType().equals("1")) {
         data = ModelToMapUtil.ModelToPoiMap(finance);
         data.put("${finance_num}", finance.getFinanceNum() == null ? "" : finance.getFinanceNum());
@@ -161,7 +168,9 @@ public class OaApplyFinanceService {
                 String taskName = record.getStr("taskName");
                 String userId = record.getStr("assigneeId");
                 String taskId = record.getStr("taskId");
+                logger.info("\n=====\n NMBD obj \n" + userId + "^^^^^" + taskId);
                 SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+                logger.info("\n=====\n sign obj \n" + (null == sign ? "null value ok" : sign.toJson()));
                 if (taskName.equals("分公司财务部审核")) {
                     data.put("${caiwu}", record.getStr("message") == null ? "" : record.getStr("message"));
                     if (StrKit.notNull(sign)) {
@@ -229,6 +238,7 @@ public class OaApplyFinanceService {
                 }
                 if (taskName.equals("总公司综合管理部经理审核")) {
                     data.put("${gc}", record.getStr("message") == null ? "" : record.getStr("message"));
+                    logger.info("sign local ====================" + sign.getSignLocal());
                     if (StrKit.notNull(sign)) {
                         Map<String, Object> header = new HashMap<String, Object>();
                         header.put("width", 128);
@@ -303,18 +313,29 @@ public class OaApplyFinanceService {
 //            }
 //            data = ModelToMapUtil.ModelToPoiMap(finance);
 //        }
+        logger.info("==================== \n FQ \n");
         data.put("${contractName}", contract != null ? contract.getName() : "");
         data.put("${projectName}", finance.getFormprojectName() == null ? "" : finance.getFormprojectName());
-        CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
-        File file = new File(exportURL);
-        FileOutputStream fopts = new FileOutputStream(file);
-        doc.write(fopts);
-        fopts.close();
+        logger.info("==================== \n DATA \n" + data.size());
+        File file = null;
+        try {
+            CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
+            logger.info("======================= CustomXWPFDocument \n" + doc);
+            file = new File(exportURL);
+            FileOutputStream fopts = new FileOutputStream(file);
+            doc.write(fopts);
+            fopts.close();
+            logger.info(file.toString());
+        } catch (IOException e) {
+            logger.info(e.getMessage(), e);
+        }
 //		ExportUtil.export(data, templateUrl, exportURL);
 //		File file = new File(exportURL);
         if (file.exists()) {
+            logger.info("yes, it has file ===========================");
             return file;
         } else {
+            logger.info("no, we don't have ===========================");
             return null;
         }
     }

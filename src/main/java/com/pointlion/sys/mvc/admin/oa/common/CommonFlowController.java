@@ -290,7 +290,8 @@ public class CommonFlowController extends BaseController{
 			if(null != HWsign){
 				String basepath = this.getRequest().getSession().getServletContext().getRealPath("");
 				String pictureId = UuidUtil.getUUID();
-				String filename = userid +taskid+ ".png";
+				// we need just user id as the name of the file
+				String filename = userid + ".png";
 				String finalPath = "nfwyoa/images/signImg/";
 
 				new AliyunOssUtil().uplodaImg(finalPath + filename, Base64Util.GenerateImageInput(HWsign));
