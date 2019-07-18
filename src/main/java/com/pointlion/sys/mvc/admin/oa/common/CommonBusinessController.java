@@ -30,8 +30,8 @@ public class CommonBusinessController extends BaseController {
                 String absoluteName = file.getAbsolutePath();
                 filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
             } else if ("finance".equals(type)) {//如果是财务流程
-                file = financeService.export(id, this.getRequest());
-//                String fullFileName = file.getName();
+                file = financeService.exportFile(id, this.getRequest());
+                String fullFileName = file.getName();
                 String absoluteName = file.getAbsolutePath();
                 filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
             } else if ("bankaccount".equals(type)) {//如果是银行卡开卡流程
@@ -44,6 +44,7 @@ public class CommonBusinessController extends BaseController {
             e.printStackTrace();
         }
         if(null != filePdf){
+            logger.info("@@@@@@@@@@@@@@@@@@@@@@\nfile is not null");
         	file = filePdf;
         }
         renderFile(file);

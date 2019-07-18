@@ -152,7 +152,7 @@ public class WordUtil {
             if(isClose){  
                 try {  
                     in.close();  
-                } catch (Exception e2) {  
+                } catch (Exception e2) {
                     System.out.println("关闭流失败");  
                 }  
             }  
