@@ -15,9 +15,12 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
 import org.apache.poi.xwpf.usermodel.XWPFTableRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
-public class WordUtil {  
+public class WordUtil {
+    private static Logger logger = LoggerFactory.getLogger(WordUtil.class);
   
     /** 
      * 根据指定的参数值、模板，生成 word 文档 
@@ -146,9 +149,9 @@ public class WordUtil {
             int total = in.available();  
             byteArray = new byte[total];  
             in.read(byteArray);  
-        } catch (IOException e) {  
-            e.printStackTrace();  
-        }finally{  
+        } catch (IOException e) {
+            logger.info("**********\n" + e.getMessage(), e);
+        } finally{  
             if(isClose){  
                 try {  
                     in.close();  

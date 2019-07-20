@@ -1,9 +1,6 @@
 package com.pointlion.sys.mvc.admin.oa.apply.bankaccount;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +8,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.collect.ImmutableMap;
 import com.pointlion.sys.mvc.common.model.SysUserSign;
 import com.pointlion.sys.mvc.common.utils.word.CustomXWPFDocument;
 import com.pointlion.sys.mvc.common.utils.word.WordUtil;
+import org.activiti.editor.language.json.converter.util.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.jfinal.aop.Before;
@@ -69,6 +68,139 @@ public class OaApplyBankAccountService {
         return Db.paginate(pnum, psize, " select o.*,p.PROC_DEF_ID_ defid ", sql);
     }
 
+    public File exportFile(String id, HttpServletRequest request) throws IOException {
+        OaApplyBankAccount bankaccount = OaApplyBankAccount.dao.findById(id);
+        String path = request.getSession().getServletContext().getRealPath("") + "/WEB-INF/admin/oa/apply/bankaccount/template/";
+        String templateUrl = path + "bankaccount_" + bankaccount.getType() + ".docx";
+        String basepath = request.getSession().getServletContext().getRealPath("");
+        List<Record> list = workFlowService.getHisTaskList2(bankaccount.getProcInsId());
+        Map<String, Object> data = ModelToMapUtil.ModelToPoiMap(bankaccount);
+        List<String> receivelist = new ArrayList<String>();
+        try {
+            prepareParas(data, request);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (Record record : list) {
+                prepareTask(basepath, record, data);
+                String lineContent = record.getStr("taskName") + ":" + record.getStr("assignee") + ":" + record.getStr("message");
+                lineContent = ExportUtil.addEmptyString(lineContent, 15);
+                receivelist.add(lineContent);
+            }
+        }
+
+        bankaccount.put("projectName", bankaccount.getFormProjectName());
+        bankaccount.put("receiver", StringUtils.join(receivelist, POITemplateUtil.NewLine + "-------------------------------------------------------------------------------" + POITemplateUtil.NewLine));
+        //抄送
+        String findCcTargetSql = "select * from oa_flow_carbon_c c ,sys_user u  where u.id=c.user_id and business_id = '%s' ";
+        List<OaFlowCarbonC> cclist = OaFlowCarbonC.dao.find(String.format(findCcTargetSql, id));
+        if (StrKit.notNull(cclist)) {
+            List<String> nameList = new ArrayList<String>();
+            for (OaFlowCarbonC cc : cclist) {
+                nameList.add(cc.getStr("name"));
+            }
+            bankaccount.put("cc", StringUtils.join(nameList, ","));
+        } else {
+            bankaccount.put("cc", "无");
+        }
+
+        bankaccount.put("beizhuName", bankaccount.getDes());
+        data.put("${projectName}", bankaccount.getFormProjectName() == null ? "" : bankaccount.getFormProjectName());
+
+        String exportURL = path + bankaccount.getTitle() + "_" + bankaccount.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+        CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
+        File file = new File(exportURL);
+        FileOutputStream fopts = new FileOutputStream(file);
+        doc.write(fopts);
+        fopts.close();
+        return file.exists() ? file : null;
+    }
+
+    private void prepareParas(Map<String, Object> data, HttpServletRequest request) throws FileNotFoundException {
+        data.put("${caiwu}", "");
+        data.put("${caiwu_img}", getdefaultImg(request,350,80));
+        data.put("${gc}", "");
+        data.put("${gc_img}", getdefaultImg(request,350,80));
+        data.put("${zcaiwu}", "");
+        data.put("${zcaiwu_img}", getdefaultImg(request,350,80));
+        data.put("${b1}", "");
+        data.put("${b1_img}", getdefaultImg(request,175,80));
+        data.put("${b2}", "");
+        data.put("${b2_img}", getdefaultImg(request,175,80));
+        data.put("${MainTopLeader}", "");
+        data.put("${MainTopLeader_img}", getdefaultImg(request,350,80));
+        data.put("${xmjl}", "");
+        data.put("${xmjl_img}", getdefaultImg(request,350,80));
+        data.put("${zrenshi}", "");
+        data.put("${zrenshi_img}", getdefaultImg(request,350,80));
+    }
+
+    private void prepareTask(String basePath, Record r, Map<String, Object> data) throws FileNotFoundException {
+        String userId = r.getStr("assigneeId");
+        String taskName = r.getStr("taskName");
+        String taskId = r.getStr("taskId");
+        SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+
+        Map<String, Object> header = null;
+        int width, height;
+        if (taskName.equals("分公司财务部审核") || taskName.equals("总公司财务部审核")) {
+            width = 200;
+            height = 50;
+        } else {
+            width = 128;
+            height = 27;
+        }
+        if (StrKit.notNull(sign)) {
+            header = ImmutableMap.<String, Object>builder()
+                    .put("width", width)
+                    .put("height", height)
+                    .put("type", "png")
+                    .put("content", WordUtil.inputStream2ByteArray(new FileInputStream(basePath + "/" + sign.getSignLocal()), true))
+                    .build();
+        }
+        switch (taskName) {
+            case "分公司财务部审核":
+                data.put("${caiwu}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${caiwu_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "总公司财务部审核":
+                data.put("${zcaiwu}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${zcaiwu_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "总公司总经理审核":
+                data.put("${MainTopLeader}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${MainTopLeader_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "一级分公司总经理审核":
+                data.put("${b1}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${b1_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "二级分公司总经理审核":
+                data.put("${b2}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${b2_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "总公司综合管理部经理审核":
+                data.put("${gc}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${gc_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "项目经理审核":
+                data.put("${xmjl}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${xmjl_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "总公司人事行政部经理审核":
+                data.put("${zrenshi}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${zrenshi_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            case "总公司相关职能部门":
+                data.put("${znbm}", r.getStr("message") == null ? "" : r.getStr("message"));
+                data.put("${znbm_img}", StrKit.notNull(sign) ? header : "");
+                break;
+            default:
+                break;
+        }
+    }
     /***
      * 导出
      * @throws Exception

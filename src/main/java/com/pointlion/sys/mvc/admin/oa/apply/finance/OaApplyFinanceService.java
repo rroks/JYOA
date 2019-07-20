@@ -193,13 +193,17 @@ public class OaApplyFinanceService {
         String taskId = record.getStr("taskId");
         SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
         Map<String, Object> header = null;
-        if (StrKit.notNull(sign)) {
-            header = ImmutableMap.<String, Object>builder()
-                    .put("width", 128)
-                    .put("height", 27)
-                    .put("type", "png")
-                    .put("content", WordUtil.inputStream2ByteArray(new FileInputStream(basePath + "/" + sign.getSignLocal()), true))
-                    .build();
+        try {
+            if (StrKit.notNull(sign)) {
+                header = ImmutableMap.<String, Object>builder()
+                        .put("width", 128)
+                        .put("height", 27)
+                        .put("type", "png")
+                        .put("content", WordUtil.inputStream2ByteArray(new FileInputStream(basePath + "/" + sign.getSignLocal()), true))
+                        .build();
+            }
+        } catch (Exception e) {
+            logger.info("@@@@@@@@@@@@@@@@\n" + e.getMessage(), e);
         }
         logger.info(String.format("@@@@@@@@@@@@@@@@@@@@@@@@@@\n%s", taskName));
         switch (taskName) {

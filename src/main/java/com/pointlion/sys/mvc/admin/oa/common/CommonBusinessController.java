@@ -31,9 +31,16 @@ public class CommonBusinessController extends BaseController {
                 filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
             } else if ("finance".equals(type)) {//如果是财务流程
                 file = financeService.exportFile(id, this.getRequest());
+                logger.info("reach file");
                 String fullFileName = file.getName();
                 String absoluteName = file.getAbsolutePath();
-                filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
+                logger.info("reach before 2PDF");
+                try {
+                    filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
+                } catch (Exception e) {
+                    logger.info(e.getMessage(), e);
+                }
+                logger.info("reach after 2PDF");
             } else if ("bankaccount".equals(type)) {//如果是银行卡开卡流程
                 file = bankAccountService.export(id, this.getRequest());
                 String fullFileName = file.getName();
@@ -41,12 +48,9 @@ public class CommonBusinessController extends BaseController {
                 filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.info("&&&&&&&&&&&&&&&&&\n" + e.getMessage(), e);
         }
-        if(null != filePdf){
-            logger.info("@@@@@@@@@@@@@@@@@@@@@@\nfile is not null");
-        	file = filePdf;
-        }
-        renderFile(file);
+        logger.info("@@@@@@@@@@@@@@@@@@@@@@\n" + String.valueOf(null != filePdf) + String.valueOf(null != file));
+        renderFile(null != filePdf ? filePdf : file);
     }
 }
