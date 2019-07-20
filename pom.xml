@@ -249,12 +249,12 @@
     <version>1.7.25</version>
 </dependency>
 	<dependency>
-	      <groupId>com.jykj.jodconverter</groupId>  <!--jodconverter jar包-->
-	      <artifactId>jodconverter</artifactId>    <!--自定义-->
-	      <version>2.2.2</version> <!--自定义-->
-	      <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
-	      <systemPath>${basedir}/lib/jodconverter-2.2.2.jar</systemPath> <!--项目根目录下的lib文件夹下-->
-	 	 </dependency> 
+		<groupId>com.jykj.jodconverter</groupId>  <!--jodconverter jar包-->
+		<artifactId>jodconverter</artifactId>    <!--自定义-->
+		<version>2.2.2</version> <!--自定义-->
+		<scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
+		<systemPath>${basedir}/lib/jodconverter-2.2.2.jar</systemPath> <!--项目根目录下的lib文件夹下-->
+	</dependency>
 	 	 <dependency>
 	      <groupId>com.jykj.commons-cli-1.2</groupId>  <!--jodconverter jar包-->
 	      <artifactId>commons-cli</artifactId>    <!--自定义-->

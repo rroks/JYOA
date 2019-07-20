@@ -192,15 +192,22 @@ public class OaApplyFinanceService {
         String userId = record.getStr("assigneeId");
         String taskId = record.getStr("taskId");
         SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+        if (!StrKit.notNull(sign)){
+            sign = SysUserSign.dao.getByUserid(userId);
+        }
         Map<String, Object> header = null;
         try {
             if (StrKit.notNull(sign)) {
+                logger.info("@@@@@@@@@@@@@@@@@\nsign info" + sign.toJson());
                 header = ImmutableMap.<String, Object>builder()
                         .put("width", 128)
                         .put("height", 27)
                         .put("type", "png")
                         .put("content", WordUtil.inputStream2ByteArray(new FileInputStream(basePath + "/" + sign.getSignLocal()), true))
                         .build();
+
+            } else {
+                logger.info("%%%%%%%%%%%%%%%%%%%\nnull sign");
             }
         } catch (Exception e) {
             logger.info("@@@@@@@@@@@@@@@@\n" + e.getMessage(), e);

@@ -142,6 +142,9 @@ public class OaApplyBankAccountService {
         String taskName = r.getStr("taskName");
         String taskId = r.getStr("taskId");
         SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+        if (!StrKit.notNull(sign)) {
+            sign = SysUserSign.dao.getByUserid(userId);
+        }
 
         Map<String, Object> header = null;
         int width, height;
@@ -235,6 +238,9 @@ public class OaApplyBankAccountService {
             String taskName = r.getStr("taskName");
             String taskId = r.getStr("taskId");
             SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+            if (!StrKit.notNull(sign)) {
+                sign = SysUserSign.dao.getByUserid(userId);
+            }
             if (taskName.equals("分公司财务部审核")) {
                 data.put("${caiwu}", r.getStr("message") == null ? "" : r.getStr("message"));
                 if (StrKit.notNull(sign)) {

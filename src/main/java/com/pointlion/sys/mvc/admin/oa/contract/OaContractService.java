@@ -208,6 +208,9 @@ public class OaContractService{
 				String userid = list.get(i).getStr("assigneeId");
 				String taskId = list.get(i).getStr("taskId");
 				SysUserSign sign = SysUserSign.dao.getByUserTaskid(userid,taskId);
+				if (!StrKit.notNull(sign)) {
+					sign = SysUserSign.dao.getByUserid(userid);
+				}
 				String receiver = list.get(i).getStr("taskName")+":"+list.get(i).getStr("assignee")+":"+list.get(i).getStr("message");
 				data.put("${receiver"+i+"}", receiver);
 				if(StrKit.notNull(sign)){
