@@ -51,6 +51,7 @@ public class CommonBusinessController extends BaseController {
             logger.info("&&&&&&&&&&&&&&&&&\n" + e.getMessage(), e);
         }
         logger.info("@@@@@@@@@@@@@@@@@@@@@@\n" + String.valueOf(null != filePdf) + String.valueOf(null != file));
+//        renderSuccess();
         renderFile(null != filePdf ? filePdf : file);
     }
 }

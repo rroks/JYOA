@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -48,7 +49,7 @@ public class WordUtil {
                         for (XWPFTableCell cell : cells) {
                             List<XWPFParagraph> paragraphListTable =  cell.getParagraphs();  
                             processParagraphs(paragraphListTable, param, doc);  
-                        }  
+                        }
                     }  
                 }  
             }  
@@ -65,7 +66,7 @@ public class WordUtil {
         if(paragraphList != null && paragraphList.size() > 0){  
             for(XWPFParagraph paragraph:paragraphList){  
                 List<XWPFRun> runs = paragraph.getRuns();  
-           
+
                 	String text = "";
                 	for (XWPFRun run : runs) 
                 		text += run.getText(0); 
@@ -80,7 +81,8 @@ public class WordUtil {
                                 if (value instanceof String) {//文本替换  
                                     text = text.replace(key, value.toString());
                                 } else if (value instanceof Map) {//图片替换  
-                                    text = text.replace(key, "");  
+                                    text = text.replace(key, "");
+                                    logger.info("$%^&*&^%$#@#$%^&*()(*&^%$#\n" + new JSONObject((Map)value).toJSONString());
                                     Map pic = (Map)value;  
                                     int width = Integer.parseInt(pic.get("width").toString());  
                                     int height = Integer.parseInt(pic.get("height").toString());  
@@ -92,13 +94,15 @@ public class WordUtil {
 //                                        doc.createPicture(ind, width , height,paragraph);
                                     	doc.addPictureData(byteInputStream, picType);
                                         doc.createPicture(doc.getAllPictures().size() - 1, width, height, paragraph);
-                                        System.out.println("图片替换");
+                                        System.out.println("@@@@@@@@\nreplace pic");
+                                        logger.info("@@@@@@@@\nreplace pic");
                                     } catch (Exception e) {  
-                                        e.printStackTrace();  
-                                    }  
-                                }  
-                            }  
-                        }  
+                                        e.printStackTrace();
+                                        logger.info("()()()(*&^%$#@#$%^&\n not replace pic");
+                                    }
+                                }
+                            }
+                        }
                         if(isSetText){  
                             int flag = 1;
                         	for (XWPFRun run : runs){

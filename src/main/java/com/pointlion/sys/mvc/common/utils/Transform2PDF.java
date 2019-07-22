@@ -5,6 +5,9 @@ import com.artofsolving.jodconverter.openoffice.connection.OpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.connection.SocketOpenOfficeConnection;
 import com.artofsolving.jodconverter.openoffice.converter.OpenOfficeDocumentConverter;
 import com.jfinal.kit.PropKit;
+import com.pointlion.sys.mvc.admin.oa.common.CommonBusinessController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,15 +17,18 @@ public class Transform2PDF {
     public final static String officeHome = PropKit.use("config.properties").get("jodconverter.officeHome");
     public final static String portNumber = PropKit.use("config.properties").get("jodconverter.portNumber");
 
+    private static Logger logger = LoggerFactory.getLogger(Transform2PDF.class);
+
     public static File office2PDF(String sourceFile, String destFile) {
         try {
+            logger.info("\nReach inside office2PDF\n");
             File outputFile = new File(destFile);
 //        	if(outputFile.exists()){
 //        		return outputFile;
 //        	}else{
             File inputFile = new File(sourceFile);
             if (!inputFile.exists()) {
-                System.out.println("null");
+                logger.info("$$$$$$$$$$$$$$$$$$\nfile not exist!");
                 ;// 找不到源文件, 则返回-1
             }
 
@@ -36,6 +42,7 @@ public class Transform2PDF {
 //            String command = "C:/Program Files (x86)/OpenOffice 4/program/soffice.exe -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
             String command = "C:/Program Files (x86)/OpenOffice 4/program/soffice.exe -headless -accept=\"socket,host=127.0.0.1,port=8100;urp;\"";
             Process p = Runtime.getRuntime().exec(command);
+            logger.info("\nexecuted run openoffice\n");
 
             // 连接openoffice服务
 //            OpenOfficeConnection connection = new SocketOpenOfficeConnection(officeAddress, Integer.valueOf(portNumber));
@@ -45,6 +52,7 @@ public class Transform2PDF {
             // 转换
             DocumentConverter converter = new OpenOfficeDocumentConverter(connection);
             converter.convert(inputFile, outputFile);
+            logger.info("\nexported\n");
 
             // 关闭连接
             connection.disconnect();
@@ -53,9 +61,11 @@ public class Transform2PDF {
             p.destroy();
             return outputFile;
         } catch (IOException e) {
+            logger.info("IOException" + e.getMessage(), e);
             e.printStackTrace();
             return null;
         } catch (Exception e) {
+            logger.info("General Exception" + e.getMessage(), e);
             e.printStackTrace();
             return null;
         }

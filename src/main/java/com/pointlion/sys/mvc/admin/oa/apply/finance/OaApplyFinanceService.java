@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import com.pointlion.sys.mvc.admin.oa.common.CommonFlowController;
 import org.activiti.editor.language.json.converter.util.CollectionUtils;
@@ -143,11 +145,13 @@ public class OaApplyFinanceService {
         }
 
         if (CollectionUtils.isNotEmpty(list)) {
+            logger.info("\n" + list.size());
             for (Record record : list) {
                 prepareTask(basepath, record, data);
             }
         }
         File file = null;
+        logger.info("#@$$!#!!^&#!*&#@*#&*@&*#&*@\n" + new JSONObject(data).toJSONString());
         try {
             file = new File(exportURL);
             CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
@@ -163,23 +167,23 @@ public class OaApplyFinanceService {
 
     private void prepareParas(Map<String, Object> data, HttpServletRequest request, OaContract contract, OaApplyFinance finance) throws FileNotFoundException {
         data.put("${caiwu}", "");
-        data.put("${caiwu_img}", getdefaultImg(request,350,80));
+        data.put("${caiwu_img}", "");
         data.put("${gc}", "");
-        data.put("${gc_img}", getdefaultImg(request,350,80));
+        data.put("${gc_img}", "");
         data.put("${zcaiwu}", "");
-        data.put("${zcaiwu_img}", getdefaultImg(request,350,80));
+        data.put("${zcaiwu_img}", "");
         data.put("${b1}", "");
-        data.put("${b1_img}", getdefaultImg(request,175,80));
+        data.put("${b1_img}", "");
         data.put("${b2}", "");
-        data.put("${b2_img}", getdefaultImg(request,350,80));
+        data.put("${b2_img}", "");
         data.put("${MainTopLeader}", "");
-        data.put("${MainTopLeader_img}", getdefaultImg(request,350,80));
+        data.put("${MainTopLeader_img}", "");
         data.put("${xmjl}", "");
-        data.put("${xmjl_img}", getdefaultImg(request,350,80));
+        data.put("${xmjl_img}", "");
         data.put("${zrenshi}", "");
-        data.put("${zrenshi_img}", getdefaultImg(request,350,80));
+        data.put("${zrenshi_img}", "");
         data.put("${znbm}", "");
-        data.put("${znbm_img}", getdefaultImg(request,350,80));
+        data.put("${znbm_img}", "");
 
         data.put("${finance_num}", finance.getFinanceNum() == null ? "" : finance.getFinanceNum());
         data.put("${contractName}", contract != null ? contract.getName() : "");
@@ -198,16 +202,13 @@ public class OaApplyFinanceService {
         Map<String, Object> header = null;
         try {
             if (StrKit.notNull(sign)) {
-                logger.info("@@@@@@@@@@@@@@@@@\nsign info" + sign.toJson());
+                logger.info("@@@@@@@@@@@@@@@@@\nsign info" + sign.getId());
                 header = ImmutableMap.<String, Object>builder()
                         .put("width", 128)
                         .put("height", 27)
                         .put("type", "png")
                         .put("content", WordUtil.inputStream2ByteArray(new FileInputStream(basePath + "/" + sign.getSignLocal()), true))
                         .build();
-
-            } else {
-                logger.info("%%%%%%%%%%%%%%%%%%%\nnull sign");
             }
         } catch (Exception e) {
             logger.info("@@@@@@@@@@@@@@@@\n" + e.getMessage(), e);
