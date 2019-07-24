@@ -42,7 +42,7 @@ public class CommonBusinessController extends BaseController {
                 }
                 logger.info("reach after 2PDF");
             } else if ("bankaccount".equals(type)) {//如果是银行卡开卡流程
-                file = bankAccountService.export(id, this.getRequest());
+                file = bankAccountService.exportFile(id, this.getRequest());
                 String fullFileName = file.getName();
                 String absoluteName = file.getAbsolutePath();
                 filePdf = Transform2PDF.office2PDF(absoluteName, absoluteName.substring(0, absoluteName.lastIndexOf(".")) + ".pdf");

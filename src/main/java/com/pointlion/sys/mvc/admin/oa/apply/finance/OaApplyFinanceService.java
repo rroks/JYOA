@@ -135,7 +135,7 @@ public class OaApplyFinanceService {
 
         List<Record> list = workFlowService.getHisTaskList2(finance.getProcInsId());
         Map<String, Object> data;
-        String exportURL = path + finance.getTitle() + "_" + finance.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+        String exportURL = path + finance.getTitle() == null ? "" : finance.getTitle() + "_" + finance.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
         data = ModelToMapUtil.ModelToPoiMap(finance);
 
         try {
@@ -217,39 +217,40 @@ public class OaApplyFinanceService {
         switch (taskName) {
             case "分公司财务部审核":
                 data.put("${caiwu}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${caiwu_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${caiwu_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司财务部审核":
                 data.put("${zcaiwu}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${zcaiwu_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${zcaiwu_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司总经理审核":
                 data.put("${MainTopLeader}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${MainTopLeader_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${MainTopLeader_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "一级分公司总经理审核":
                 data.put("${b1}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${b1_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${b1_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "二级分公司总经理审核":
                 data.put("${b2}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${b2_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${b2_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司综合管理部经理审核":
                 data.put("${gc}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${gc_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${gc_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "项目经理审核":
+            case "部门领导审核":
                 data.put("${xmjl}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${xmjl_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${xmjl_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司人事行政部经理审核":
                 data.put("${zrenshi}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${zrenshi_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${zrenshi_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司相关职能部门":
                 data.put("${znbm}", record.getStr("message") == null ? "" : record.getStr("message"));
-                data.put("${znbm_img}", StrKit.notNull(sign) ? header : "");
+                data.put("${znbm_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             default:
                 break;

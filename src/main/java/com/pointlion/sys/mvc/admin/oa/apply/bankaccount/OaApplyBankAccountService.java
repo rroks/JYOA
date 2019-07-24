@@ -174,66 +174,40 @@ public class OaApplyBankAccountService {
         switch (taskName) {
             case "分公司财务部审核":
                 data.put("${caiwu}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${caiwu_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${caiwu_img}", header);
-                }
+                data.put("${caiwu_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司财务部审核":
                 data.put("${zcaiwu}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${zcaiwu_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${zcaiwu_img}", header);
-                }
+                data.put("${zcaiwu_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司总经理审核":
                 data.put("${MainTopLeader}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${MainTopLeader_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${caiwu_img}", header);
-                }
+                data.put("${MainTopLeader_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "一级分公司总经理审核":
                 data.put("${b1}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${b1_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${b1_img}", header);
-                }
+                data.put("${b1_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "二级分公司总经理审核":
                 data.put("${b2}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${b2_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${b2_img}", header);
-                }
+                data.put("${b2_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司综合管理部经理审核":
                 data.put("${gc}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${gc_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${gc_img}", header);
-                }
+                data.put("${gc_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "项目经理审核":
+            case "部门领导审核":
                 data.put("${xmjl}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${xmjl_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${xmjl_img}", header);
-                }
+                data.put("${xmjl_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司人事行政部经理审核":
                 data.put("${zrenshi}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${zrenshi_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${zrenshi_img}", header);
-                }
+                data.put("${zrenshi_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             case "总公司相关职能部门":
                 data.put("${znbm}", r.getStr("message") == null ? "" : r.getStr("message"));
-//                data.put("${znbm_img}", StrKit.notNull(sign) ? header : "");
-                if (StrKit.notNull(sign)) {
-                    data.put("${znbm_img}", header);
-                }
+                data.put("${znbm_img}", StrKit.notNull(sign) && header != null ? header : "");
                 break;
             default:
                 break;
@@ -414,7 +388,7 @@ public class OaApplyBankAccountService {
 
         bankaccount.put("beizhuName", bankaccount.getDes());
         data.put("${projectName}", bankaccount.getFormProjectName() == null ? "" : bankaccount.getFormProjectName());
-        String exportURL = path + bankaccount.getTitle() + "_" + bankaccount.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+        String exportURL = path + bankaccount.getTitle() == null ? "" : bankaccount.getTitle() + "_" + bankaccount.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
         CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
         File file = new File(exportURL);
         FileOutputStream fopts = new FileOutputStream(file);
