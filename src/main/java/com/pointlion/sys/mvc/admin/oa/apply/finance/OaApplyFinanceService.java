@@ -135,7 +135,7 @@ public class OaApplyFinanceService {
 
         List<Record> list = workFlowService.getHisTaskList2(finance.getProcInsId());
         Map<String, Object> data;
-        String exportURL = path + finance.getTitle() == null ? "" : finance.getTitle() + "_" + finance.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+        String exportURL = path + (finance.getTitle() == null ? "" : finance.getTitle()) + "_" + finance.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
         data = ModelToMapUtil.ModelToPoiMap(finance);
 
         try {
@@ -151,7 +151,6 @@ public class OaApplyFinanceService {
             }
         }
         File file = null;
-        logger.info("#@$$!#!!^&#!*&#@*#&*@&*#&*@\n" + new JSONObject(data).toJSONString());
         try {
             file = new File(exportURL);
             CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);

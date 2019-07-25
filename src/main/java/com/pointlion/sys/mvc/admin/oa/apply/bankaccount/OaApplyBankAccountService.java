@@ -109,7 +109,7 @@ public class OaApplyBankAccountService {
         bankaccount.put("beizhuName", bankaccount.getDes());
         data.put("${projectName}", bankaccount.getFormProjectName() == null ? "" : bankaccount.getFormProjectName());
 
-        String exportURL = path + bankaccount.getTitle() + "_" + bankaccount.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
+        String exportURL = path + (bankaccount.getTitle() == null ? "" : bankaccount.getTitle()) + "_" + bankaccount.getCreateTime().replaceAll(" ", "_").replaceAll(":", "-") + ".docx";
         CustomXWPFDocument doc = WordUtil.generateWord(data, templateUrl);
         File file = new File(exportURL);
         FileOutputStream fopts = new FileOutputStream(file);
