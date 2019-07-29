@@ -194,7 +194,7 @@ public class OaApplyFinanceService {
         String taskName = record.getStr("taskName");
         String userId = record.getStr("assigneeId");
         String taskId = record.getStr("taskId");
-        SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId,taskId);
+        SysUserSign sign = SysUserSign.dao.getByUserTaskid(userId, taskId);
         if (!StrKit.notNull(sign)){
             sign = SysUserSign.dao.getByUserid(userId);
         }
